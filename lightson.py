@@ -1,11 +1,13 @@
 import array
 from ola.ClientWrapper import ClientWrapper
 import math
+import time
 
 wrapper = None
 
 def DmxSent(state):
   if not state.Succeeded():
+    print ("Error: "+state)
     wrapper.Stop()
 
 
@@ -14,16 +16,23 @@ wrapper = ClientWrapper()
 # compute frame here
 data = array.array('B')
 
-# for i in range(100):
-#   light = array.array('B', [0, 0, 0])
-#   light[i%3] = 255
-#   data.extend(light)
+for i in range(100):
+  light = array.array('B', [0, 0, 0])
+  light[i%2] = 255
+  data.extend(light)
 
+wrapper.Client().SendDmx(1, data, DmxSent)
+
+time.sleep (2)
+
+data = array.array('B')
+  
+  
 for i in range(300):
   data.append(0)
 
 LENGTH=100
-NUMSETS=10
+NUMSETS=5
 SETSIZE = int(LENGTH/NUMSETS)
 
 for set in range(NUMSETS):
@@ -37,4 +46,4 @@ for set in range(NUMSETS):
 wrapper.Client().SendDmx(1, data, DmxSent)
 
 
-wrapper.Run()
+#wrapper.Run()
