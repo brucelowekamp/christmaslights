@@ -30,6 +30,7 @@ def RedGreen():
 def RGFade():
   global LENGTH
   print ("RGFade pattern")
+
   data = array.array('B')
   for i in range(300):
     data.append(0)
@@ -40,9 +41,10 @@ def RGFade():
   for set in range(NUMSETS):
     base = set * SETSIZE*3
     color = set % 2
+    
     for pixel in range(SETSIZE):
       #print (int(math.exp((pixel+1.0)/SETSIZE*6-6)*255))
-      data[base+pixel*3+color] = int(math.exp((pixel+1.0)/SETSIZE*6-6)*255)
+      data[base+(pixel if (set%2==0) else (SETSIZE-pixel-1))*3+color] = int(math.exp((pixel+1.0)/SETSIZE*6-6)*255)
   return data
 
 
