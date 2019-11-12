@@ -32,7 +32,7 @@ for i in range(300):
   data.append(0)
 
 LENGTH=100
-NUMSETS=5
+NUMSETS=10
 SETSIZE = int(LENGTH/NUMSETS)
 
 for set in range(NUMSETS):
@@ -40,8 +40,8 @@ for set in range(NUMSETS):
   color = set % 3
   for pixel in range(SETSIZE):
     #data[base+pixel*3+color] = int((pixel+1)/SETSIZE*255)
-    print (int(math.exp((pixel+1)/SETSIZE*6-6)*255))
-    data[base+pixel*3+color] = int(math.exp((pixel+1)/SETSIZE*6-6)*255)
+    print (int(math.exp((pixel+1.0)/SETSIZE*6-6)*255))
+    data[base+pixel*3+color] = int(math.exp((pixel+1.0)/SETSIZE*6-6)*255)
 
 wrapper.Client().SendDmx(1, data, DmxSent)
 
