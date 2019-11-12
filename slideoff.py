@@ -4,8 +4,10 @@ import math
 import time
 
 wrapper = None
-TICK_INTERVAL = 50  # in ms
+TICK_INTERVAL = 100  # in ms
+TICK_PER_SEC = 1000/TICK_INTERVAL
 
+LENGTH = 100
 def DmxSent(state):
   if not state.Succeeded():
     print ("Error: "+state)
@@ -15,53 +17,91 @@ def DmxSent(state):
 wrapper = ClientWrapper()
 
 # compute frame here
-data = array.array('B')
 
-for i in range(100):
-  light = array.array('B', [0, 0, 0])
-  light[i%2] = 255
-  data.extend(light)
+def RedGreen():
+  print ("RedGreen pattern")
+  data = array.array('B')
+  for i in range(100):
+    light = array.array('B', [0, 0, 0])
+    light[(i/5)%2] = 255
+    data.extend(light)
+  return data
 
-wrapper.Client().SendDmx(1, data, DmxSent)
+def RGFade():
+  global LENGTH
+  print ("RGFade pattern")
+  data = array.array('B')
+  for i in range(300):
+    data.append(0)
 
-time.sleep (2)
+  NUMSETS=10
+  SETSIZE = int(LENGTH/NUMSETS)
 
-data = array.array('B')
-  
-  
-for i in range(300):
-  data.append(0)
+  for set in range(NUMSETS):
+    base = set * SETSIZE*3
+    color = set % 2
+    for pixel in range(SETSIZE):
+      #print (int(math.exp((pixel+1.0)/SETSIZE*6-6)*255))
+      data[base+pixel*3+color] = int(math.exp((pixel+1.0)/SETSIZE*6-6)*255)
+  return data
 
-LENGTH=100
-NUMSETS=10
-SETSIZE = int(LENGTH/NUMSETS)
 
-for set in range(NUMSETS):
-  base = set * SETSIZE*3
-  color = set % 3
-  for pixel in range(SETSIZE):
-    #data[base+pixel*3+color] = int((pixel+1)/SETSIZE*255)
-    print (int(math.exp((pixel+1.0)/SETSIZE*6-6)*255))
-    data[base+pixel*3+color] = int(math.exp((pixel+1.0)/SETSIZE*6-6)*255)
+def SlideLeft():
+  global pixels
+  # compute frame here
+  pixels.pop(0)
+  pixels.pop(0)
+  pixels.pop(0)
+  pixels.extend([0,0,0])
 
-wrapper.Client().SendDmx(1, data, DmxSent)
-
-time.sleep(2)
+loop_count = 0
+sliding = False
+slide_count = 0
+pattern = 0
 
 def SendDMXFrame():
-  print ("called send")
+  global loop_count
+  global sliding
+  global slide_count
+  global pixels
+  global pattern
+  global TICK_PER_SEC
+  global LENGTH
+  
   # schdule a function call in 100ms
   # we do this first in case the frame computation takes a long time.
   wrapper.AddEvent(TICK_INTERVAL, SendDMXFrame)
+  if (loop_count % TICK_PER_SEC == 0): print ("loop: ", loop_count)
+  draw = False
+  if (loop_count == 120*TICK_PER_SEC):
+    draw=True
+    if (pattern == 0):
+      pixels = RedGreen()
+    else:
+      pixels = RGFade()
+      pattern = -1
+    pattern += 1
+    loop_count = 0
 
-  # compute frame here
-  data.pop(0)
-  data.pop(0)
-  data.pop(0)
-  data.extend([0,0,0])
+  if (loop_count == 100*TICK_PER_SEC):
+    print ("start slide")
+    sliding = True
+    slide_count = 0
 
+  if (sliding):
+    SlideLeft()
+    draw = True
+    slide_count+=1
+
+  if (slide_count == LENGTH): # ADD CONSTANT
+    sliding = False;
+    
+  loop_count += 1
   # send
-  wrapper.Client().SendDmx(1, data, DmxSent)
+  if (draw): wrapper.Client().SendDmx(1, pixels, DmxSent)
+
+pixels = RGFade()
+wrapper.Client().SendDmx(1, pixels, DmxSent)
 
 wrapper.AddEvent(TICK_INTERVAL, SendDMXFrame)
 wrapper.Run()
