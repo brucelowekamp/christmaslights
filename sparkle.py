@@ -5,6 +5,8 @@ import time
 import random
 import colorsys
 
+USE_RELAYS = False #disable AC relay/GPIO (universe 10)
+
 SLIDE_START_MS = 100*1000
 RESET_DISPLAY_MS = 120*1000
 
@@ -97,7 +99,28 @@ class Display(object):
     for i in range(self._num_strands):
       wrapper.Client().SendDmx(self._strand_universe[i], self._pixels[i], DmxSent)
 
-    
+
+class Relays(object):
+  def __init__(self):
+    self._dmx = array.array('B', [0, 0, 0])
+    self._send = False
+    self._universe = 10
+
+  @property
+  def send(self):
+    return self._send
+
+  def on(self, channel):
+    self._dmx[channel] = 255
+    self._send = True
+
+  def off(self, channel):
+    self._dmx[channel] = 0
+    self._send = True
+
+  def SendDmx(self):
+    if(USE_RELAYS): wrapper.Client().SendDmx(self._universe, self._dmx, DmxSent)
+    self._send = False
 
 # compute frame here
 
@@ -144,8 +167,13 @@ def Rainbow(display):
     
 LightPatterns = [RedGreen, RGFade, White, Rainbow]
 
+GPIO_FANS = 0
+GPIO_OLAF = 1
+GPIO_GRINCH = 2
+
 #pass via lambda?
 loop_count = 0
+relays = Relays()
 display = None
 sliding = False
 draw = False
@@ -161,13 +189,20 @@ def NewDisplay():
   global loop_count
   global sliding
   global display
+  global relays
   
   loop_count = 0
   sliding = False
   display = Display()
   random.choice(LightPatterns)(display)
   draw = True
+  wrapper.AddEvent(0, lambda: relays.on(GPIO_FANS))
+  wrapper.AddEvent(0, lambda: relays.on(GPIO_OLAF))
+  wrapper.AddEvent(0, lambda: relays.off(GPIO_GRINCH))
+  wrapper.AddEvent(SLIDE_START_MS-3000, lambda: relays.off(GPIO_OLAF))
+  wrapper.AddEvent(SLIDE_START_MS-3000, lambda: relays.on(GPIO_GRINCH))
   wrapper.AddEvent(SLIDE_START_MS, StartSlide)
+  wrapper.AddEvent(0, lambda: relays.off(GPIO_GRINCH))
   wrapper.AddEvent(RESET_DISPLAY_MS, NewDisplay)
 
 # send frame precomputed last call, then compute frame and schedule next call
@@ -180,6 +215,7 @@ def SendFrame():
 
   # send if we should, first thing to time as precisely as we can
   if (draw): display.SendDmx()
+  if (relays.send): relays.SendDmx()
   if (loop_count % (TICK_PER_SEC*10) == 0): print "loop: ", loop_count // TICK_PER_SEC
 
   draw = False
