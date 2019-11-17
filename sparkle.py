@@ -1,5 +1,6 @@
 import array
 from ola.ClientWrapper import ClientWrapper
+from wl_to_rgb import wavelength_to_rgb
 import math
 import time
 import random
@@ -172,8 +173,10 @@ def Rainbow(display):
   for s in range(display.num_strands):
     l = display.StrandLength(s)
     for p in range(l):
-      (r, g, b) = colorsys.hsv_to_rgb((p*1.0)/l, 1, 1)
-      display.ColorSetStrand(s, p, int(r*255), int(g*255), int(b*255))
+      #(r, g, b) = colorsys.hsv_to_rgb((p*1.0)/l, 1, 1)
+      #display.ColorSetStrand(s, p, int(r*255), int(g*255), int(b*255))
+      (r, g, b) = wavelength_to_rgb((l-p-1.0)/l*370+380)
+      display.ColorSetStrand(s, p, r, g, b)
     
 LightPatterns = [RedGreen, RGFade, White, Rainbow]
 
