@@ -25,6 +25,7 @@ def DmxSent(state):
 class Display(object):
 
   def __init__(self):
+    self._draw = False
     self._num_strands = 2
     self._strand_length = [100, 50]
     self._strand_universe = [1, 2]
@@ -48,6 +49,10 @@ class Display(object):
   @property
   def max_strand_length(self):
     return max(self._strand_length)
+
+  @property
+  def draw_pending(self):
+    return self._draw
   
   # return length of strand
   def StrandLength(self, strand):
@@ -75,6 +80,7 @@ class Display(object):
     self._pixels[s][p*3+0] = red
     self._pixels[s][p*3+1] = green
     self._pixels[s][p*3+2] = blue
+    self._draw = True
 
   # set pixel on strand to color ([ R, G, B ])
   def ColorSetStrand(self, strand, pixel, red, green, blue):
@@ -83,6 +89,7 @@ class Display(object):
     self._pixels[strand][pixel*3+0] = red
     self._pixels[strand][pixel*3+1] = green
     self._pixels[strand][pixel*3+2] = blue
+    self._draw = True
 
   # slide all strings left and return true/false if more to slide
   def SlideLeft(self):
@@ -93,34 +100,37 @@ class Display(object):
         self._pixels[i].pop(0)
         self._pixels[i].extend([0,0,0])
       self._slide_remaining -= 1
+      self._draw = True
     return self._slide_remaining > 0
   
   def SendDmx(self):
-    for i in range(self._num_strands):
-      wrapper.Client().SendDmx(self._strand_universe[i], self._pixels[i], DmxSent)
+    if (self._draw):
+      for i in range(self._num_strands):
+        wrapper.Client().SendDmx(self._strand_universe[i], self._pixels[i], DmxSent)
+      self._draw = False
 
 
 class Relays(object):
   def __init__(self):
     self._dmx = array.array('B', [0, 0, 0])
-    self._send = False
+    self._draw = False
     self._universe = 10
 
   @property
-  def send(self):
-    return self._send
-
+  def draw_pending(self):
+    return self._draw
+  
   def on(self, channel):
     self._dmx[channel] = 255
-    self._send = True
+    self._draw = True
 
   def off(self, channel):
     self._dmx[channel] = 0
-    self._send = True
+    self._draw = True
 
   def SendDmx(self):
-    if(USE_RELAYS): wrapper.Client().SendDmx(self._universe, self._dmx, DmxSent)
-    self._send = False
+    if(USE_RELAYS and self._draw): wrapper.Client().SendDmx(self._universe, self._dmx, DmxSent)
+    self._draw = False
 
 # compute frame here
 
@@ -176,7 +186,6 @@ loop_count = 0
 relays = Relays()
 display = None
 sliding = False
-draw = False
 target_time = time.time()
 def StartSlide():
   global sliding
@@ -185,7 +194,6 @@ def StartSlide():
   sliding = True
 
 def NewDisplay():
-  global draw
   global loop_count
   global sliding
   global display
@@ -195,7 +203,6 @@ def NewDisplay():
   sliding = False
   display = Display()
   random.choice(LightPatterns)(display)
-  draw = True
   wrapper.AddEvent(0, lambda: relays.on(GPIO_FANS))
   wrapper.AddEvent(0, lambda: relays.on(GPIO_OLAF))
   wrapper.AddEvent(0, lambda: relays.off(GPIO_GRINCH))
@@ -210,12 +217,11 @@ def SendFrame():
   global display
   global loop_count
   global sliding
-  global draw
   global target_time
 
-  # send if we should, first thing to time as precisely as we can
-  if (draw): display.SendDmx()
-  if (relays.send): relays.SendDmx()
+  # send (if pending), do first thing to time as precisely as we can
+  display.SendDmx()
+  relays.SendDmx()
   if (loop_count % (TICK_PER_SEC*10) == 0): print "loop: ", loop_count // TICK_PER_SEC
 
   draw = False
