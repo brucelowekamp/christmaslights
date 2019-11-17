@@ -3,6 +3,7 @@ from ola.ClientWrapper import ClientWrapper
 import math
 import time
 import random
+import colorsys
 
 wrapper = None
 TICK_INTERVAL = 100  # in ms
@@ -16,7 +17,7 @@ def DmxSent(state):
     wrapper.Stop()
 
 class Display(object):
-  
+
   def __init__(self):
     self._num_strands = 2
     self._strand_length = [100, 50]
@@ -24,6 +25,15 @@ class Display(object):
     self._pixels= [ None ] * self._num_strands
     for i in range(self._num_strands):
       self._pixels[i] = array.array('B', [0] * (3 * self._strand_length[i]))
+    self._slide_remaining = max(self._strand_length)
+    self._map = [] # tuples for all pixels of (strand_n, pixel_n )
+    for i in range(self._num_strands):
+      for j in range (self._strand_length[i]):
+        self._map.append( (i , j ) )
+
+  @property
+  def length(self):
+    return len(self._map)
       
   @property
   def num_strands(self):
@@ -38,29 +48,47 @@ class Display(object):
     assert strand < self._num_strands
     return self._strand_length[strand]
 
+  # iterates across the map.  map tuples can be treated transparently and passed to ColorSet
+  def __iter__(self):
+    return iter(self._map)
+  
+  #return [R, G, B] of pixel from global index
+  def ColorGet(self, pixel):
+    (s, p) = pixel
+    return self._pixels[s][p*3+0], self._pixels[s][p*3+1],self._pixels[s][p*3+2]
+
   #return [R, G, B] of pixel (0-based) on strand
-  def ColorGet(self, strand, pixel):
+  def ColorGetStrand(self, strand, pixel):
     assert strand < self._num_strands
     assert pixel < self._strand_length[strand]
-    return [ self._pixels[strand][pixel*3+0],
-             self._pixels[strand][pixel*3+1],
-             self._pixels[strand][pixel*3+2] ]
+    return self._pixels[strand][pixel*3+0], self._pixels[strand][pixel*3+1],self._pixels[strand][pixel*3+2]
+
+  # set pixel from global index to color ([ R, G, B ])
+  def ColorSet(self, pixel, red, green, blue):
+    (s, p) = pixel
+    self._pixels[s][p*3+0] = red
+    self._pixels[s][p*3+1] = green
+    self._pixels[s][p*3+2] = blue
 
   # set pixel on strand to color ([ R, G, B ])
-  def ColorSet(self, strand, pixel, red, green, blue):
+  def ColorSetStrand(self, strand, pixel, red, green, blue):
     assert strand < self._num_strands
     assert pixel < self._strand_length[strand]
     self._pixels[strand][pixel*3+0] = red
     self._pixels[strand][pixel*3+1] = green
     self._pixels[strand][pixel*3+2] = blue
 
+  # slide all strings left and return true/false if more to slide
   def SlideLeft(self):
-    for i in range(self._num_strands):
-      self._pixels[i].pop(0)
-      self._pixels[i].pop(0)
-      self._pixels[i].pop(0)
-      self._pixels[i].extend([0,0,0])
-      
+    if (self._slide_remaining > 0):
+      for i in range(self._num_strands):
+        self._pixels[i].pop(0)
+        self._pixels[i].pop(0)
+        self._pixels[i].pop(0)
+        self._pixels[i].extend([0,0,0])
+      self._slide_remaining -= 1
+    return self._slide_remaining > 0
+  
   def SendDmx(self):
     for i in range(self._num_strands):
       wrapper.Client().SendDmx(self._strand_universe[i], self._pixels[i], DmxSent)
@@ -71,10 +99,11 @@ class Display(object):
 
 def RedGreen(display):
   print ("RedGreen pattern")
-  for s in range(display.num_strands):
-    for i in range(display.StrandLength(s)):
-      red = (i//5)%2 == 0
-      display.ColorSet(s, i, 255 if red else 0, 0 if red else 255, 0)
+  i = 0
+  for p in display:
+    red = (i//5)%2 == 0
+    display.ColorSet(p, 255 if red else 0, 0 if red else 255, 0)
+    i+=1
 
 def RGFade(display):
   print ("RGFade pattern")
@@ -94,20 +123,27 @@ def RGFade(display):
         red = faded if set % 2 == 0 else 0
         green = 0 if set % 2 == 0 else faded
         delta = pixel if set % 2 == 0 else SETSIZE - pixel - 1
-        display.ColorSet(s, base + delta, red, green, 0) 
+        display.ColorSetStrand(s, base + delta, red, green, 0) 
 
 def White(display):
   print ("White")
-  for s in range(display.num_strands):
-    for i in range(display.StrandLength(s)):
-      display.ColorSet(s, i, 255, 255, 255)
+  for p in display:
+    display.ColorSet(p, 255, 255, 255)
 
-LightPatterns = [RedGreen, RGFade, White]
+def Rainbow(display):
+  print ("Rainbow")
+  for s in range(display.num_strands):
+    l = display.StrandLength(s)
+    for p in range(l):
+      (r, g, b) = colorsys.hsv_to_rgb((p*1.0)/l, 1, 1)
+      display.ColorSetStrand(s, p, int(r*255), int(g*255), int(b*255))
+    
+LightPatterns = [RedGreen, RGFade, White, Rainbow]
 
 loop_count = 0
 slide_count = 0
 display = None
-
+sliding = False
 
 def SendFrame():
   global display
@@ -129,14 +165,13 @@ def SendFrame():
   elif (loop_count == 100*TICK_PER_SEC):
     print ("start slide")
     #wrapper.Client().SendDmx(10, array.array('B', [0, 255, 255]), DmxSent)
-    slide_count = display.max_strand_length
+    sliding = True
   elif (loop_count == 120*TICK_PER_SEC):
     loop_count = -1
 
-  if (slide_count > 0):
-    display.SlideLeft()
+  if (sliding):
+    sliding = display.SlideLeft()
     draw = True
-    slide_count-=1
     
   loop_count += 1
   # send
