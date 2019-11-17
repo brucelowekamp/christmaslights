@@ -5,9 +5,13 @@ import time
 import random
 import colorsys
 
+SLIDE_START_MS = 100*1000
+RESET_DISPLAY_MS = 120*1000
+
 wrapper = None
-TICK_INTERVAL = 100  # in ms
-TICK_PER_SEC = 1000//TICK_INTERVAL
+TICK_INTERVAL_MS = 50  # in ms
+TICK_INTERVAL_S = TICK_INTERVAL_MS/1000.0
+TICK_PER_SEC = 1000//TICK_INTERVAL_MS
 
 wrapper = ClientWrapper()
 
@@ -140,42 +144,65 @@ def Rainbow(display):
     
 LightPatterns = [RedGreen, RGFade, White, Rainbow]
 
+#pass via lambda?
 loop_count = 0
-slide_count = 0
 display = None
 sliding = False
+draw = False
+target_time = time.time()
+def StartSlide():
+  global sliding
+  
+  print "start slide"
+  sliding = True
 
+def NewDisplay():
+  global draw
+  global loop_count
+  global sliding
+  global display
+  
+  loop_count = 0
+  sliding = False
+  display = Display()
+  random.choice(LightPatterns)(display)
+  draw = True
+  wrapper.AddEvent(SLIDE_START_MS, StartSlide)
+  wrapper.AddEvent(RESET_DISPLAY_MS, NewDisplay)
+
+# send frame precomputed last call, then compute frame and schedule next call
 def SendFrame():
   global display
   global loop_count
   global sliding
-  global slide_count
-  global TICK_PER_SEC
-  
-  # schdule a function call in 100ms
-  # we do this first in case the frame computation takes a long time.
-  wrapper.AddEvent(TICK_INTERVAL, SendFrame)
-  if (loop_count % TICK_PER_SEC == 0): print ("loop: ", loop_count)
+  global draw
+  global target_time
+
+  # send if we should, first thing to time as precisely as we can
+  if (draw): display.SendDmx()
+  if (loop_count % (TICK_PER_SEC*10) == 0): print "loop: ", loop_count // TICK_PER_SEC
+
   draw = False
-  if (loop_count == 0):
-    display = Display()
-    random.choice(LightPatterns)(display)
-    #wrapper.Client().SendDmx(10, array.array('B', [255, 0, 0]), DmxSent)
-    draw=True
-  elif (loop_count == 100*TICK_PER_SEC):
-    print ("start slide")
-    #wrapper.Client().SendDmx(10, array.array('B', [0, 255, 255]), DmxSent)
-    sliding = True
-  elif (loop_count == 120*TICK_PER_SEC):
-    loop_count = -1
 
   if (sliding):
     sliding = display.SlideLeft()
     draw = True
-    
-  loop_count += 1
-  # send
-  if (draw): display.SendDmx()
 
-wrapper.AddEvent(TICK_INTERVAL, SendFrame)
+  # schedule a function call for remaining time
+  # we do this last with the right sleep time in case the frame computation takes a long time.
+  next_target = target_time + TICK_INTERVAL_S
+  delta_time = next_target - time.time()
+  if (delta_time < 0): #hiccup, fell behind, one extra call
+    target_time = time.time()+0.001 # make an extra call faking one ms progress, drop the rest
+    print "hiccup!"
+    SendFrame()
+  else:
+    target_time = next_target
+    wrapper.AddEvent(int(delta_time*1000), SendFrame)
+
+  loop_count += 1
+
+
+NewDisplay()
+SendFrame()
 wrapper.Run()
