@@ -3,7 +3,7 @@ from utils import *
 
 class PixelDisplay(object):
 
-  def __init__(self, wrapper):
+  def __init__(self, wrapper, options):
     self._draw = False
     self._num_strands = 2
     self._strand_length = [100, 50]
@@ -18,6 +18,9 @@ class PixelDisplay(object):
         self._map.append( (i , j ) )
     self._wrapper = wrapper
 
+  @staticmethod
+  def SetArgs(parser):
+    None
 
   @property
   def length(self):

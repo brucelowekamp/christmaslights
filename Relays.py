@@ -1,14 +1,17 @@
 import array
 from utils import *
 
-USE_RELAYS = True #disable AC relay/GPIO (universe 10)
-
 class Relays(object):
-  def __init__(self, wrapper):
+  def __init__(self, wrapper, options):
     self._dmx = array.array('B', [0, 0, 0])
     self._draw = False
     self._universe = 10
     self._wrapper = wrapper
+    self._use_relays = options.relays
+
+  @staticmethod
+  def SetArgs(parser):
+    parser.add_argument('--norelays', dest="relays", action='store_false', help="disable relays/gpio")
 
   @property
   def draw_pending(self):
@@ -24,5 +27,5 @@ class Relays(object):
 
 
   def SendDmx(self):
-    if(USE_RELAYS and self._draw): self._wrapper.Client().SendDmx(self._universe, self._dmx, DmxSent)
+    if(self._use_relays and self._draw): self._wrapper.Client().SendDmx(self._universe, self._dmx, DmxSent)
     self._draw = False
