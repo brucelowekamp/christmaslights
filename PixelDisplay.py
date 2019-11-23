@@ -17,6 +17,7 @@ class PixelDisplay(object):
       for j in range (self._strand_length[i]):
         self._map.append( (i , j ) )
     self._wrapper = wrapper
+    self._zero_pixel = array.array('B', [0, 0, 0])
 
   @staticmethod
   def SetArgs(parser):
@@ -79,10 +80,8 @@ class PixelDisplay(object):
   def SlideLeft(self):
     if (self._slide_remaining > 0):
       for i in range(self._num_strands):
-        self._pixels[i].pop(0)
-        self._pixels[i].pop(0)
-        self._pixels[i].pop(0)
-        self._pixels[i].extend([0,0,0])
+        del self._pixels[i][0:3]
+        self._pixels[i].extend(self._zero_pixel)
       self._slide_remaining -= 1
       self._draw = True
     return self._slide_remaining > 0
