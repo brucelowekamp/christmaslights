@@ -4,6 +4,7 @@ from PixelPatterns import PixelPatterns
 from Relays import Relays
 import argparse
 import array
+import gc
 import random
 import time
 
@@ -39,9 +40,11 @@ class Show(object):
     
   def StartSlide(self):
     print "start slide"
+    gc.collect()
     self._sliding = self._display.SlideLeft()
 
   def NewDisplay(self):
+    gc.collect()
     self._loop_count = 0
     self._sliding = None
     self._display = PixelDisplay(self._wrapper, self._options)
