@@ -5,14 +5,14 @@ class PixelDisplay(object):
 
   def __init__(self, wrapper, options):
     self._draw = False
-    self._num_strands = 2
+    num_strands = 2
     self._strand_length = [100, 50]
     self._strand_universe = [1, 2]
-    self._pixels= [ None ] * self._num_strands
-    for i in range(self._num_strands):
+    self._pixels= [ None ] * num_strands
+    for i in range(len(self._pixels)):
       self._pixels[i] = array.array('B', [0] * (3 * self._strand_length[i]))
     self._map = [] # tuples for all pixels of (strand_n, pixel_n )
-    for i in range(self._num_strands):
+    for i in range(len(self._pixels)):
       for j in range (self._strand_length[i]):
         self._map.append( (i , j ) )
     self._wrapper = wrapper
@@ -28,7 +28,7 @@ class PixelDisplay(object):
       
   @property
   def num_strands(self):
-    return self._num_strands
+    return len(self._pixels)
 
   @property
   def max_strand_length(self):
@@ -40,7 +40,7 @@ class PixelDisplay(object):
   
   # return length of strand
   def StrandLength(self, strand):
-    assert strand < self._num_strands
+    assert strand < len(self._pixels)
     return self._strand_length[strand]
 
   # iterates across the map.  map tuples can be treated transparently and passed to ColorSet
@@ -54,7 +54,7 @@ class PixelDisplay(object):
 
   #return [R, G, B] of pixel (0-based) on strand
   def ColorGetStrand(self, strand, pixel):
-    assert strand < self._num_strands
+    assert strand < len(self._pixels)
     assert pixel < self._strand_length[strand]
     return self._pixels[strand][pixel*3+0], self._pixels[strand][pixel*3+1],self._pixels[strand][pixel*3+2]
 
@@ -68,7 +68,7 @@ class PixelDisplay(object):
 
   # set pixel on strand to color ([ R, G, B ])
   def ColorSetStrand(self, strand, pixel, red, green, blue):
-    assert strand < self._num_strands
+    assert strand < len(self._pixels)
     assert pixel < self._strand_length[strand]
     self._pixels[strand][pixel*3+0] = red
     self._pixels[strand][pixel*3+1] = green
@@ -78,7 +78,7 @@ class PixelDisplay(object):
   # slide all strings left and return true/false if more to slide
   # implemented as generator so it looks like a normal loop
   def SlideLeft(self):
-    for i in range(self._num_strands):
+    for i in range(len(self._pixels)):
       for j in range(len(self._pixels[i])//3):
         del self._pixels[i][0:3]
         self._pixels[i].extend(self._zero_pixel)
@@ -88,6 +88,6 @@ class PixelDisplay(object):
 
   def SendDmx(self):
     if (self._draw):
-      for i in range(self._num_strands):
+      for i in range(len(self._pixels)):
         self._wrapper.Client().SendDmx(self._strand_universe[i], self._pixels[i], DmxSent)
       self._draw = False
