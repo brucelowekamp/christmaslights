@@ -28,7 +28,7 @@ class Show(object):
     self._loop_count = 0
     self._relays = None
     self._display = None
-    self._sliding = False
+    self._sliding = None
     self._target_time = time.time()
 
   @staticmethod
@@ -39,11 +39,11 @@ class Show(object):
     
   def StartSlide(self):
     print "start slide"
-    self._sliding = True
+    self._sliding = self._display.SlideLeft()
 
   def NewDisplay(self):
     self._loop_count = 0
-    self._sliding = False
+    self._sliding = None
     self._display = PixelDisplay(self._wrapper, self._options)
     self._relays = Relays(self._wrapper, self._options)
     if (self._options.pattern is not None):
@@ -67,12 +67,10 @@ class Show(object):
     if (self._loop_count % (TICK_PER_SEC*10) == 0):
       print "loop: ", self._loop_count // TICK_PER_SEC
     
-    draw = False
-  
-    if (self._sliding):
-      self._sliding = self._display.SlideLeft()
-      draw = True
-      if (not self._sliding): self._wrapper.AddEvent(self._DARK_TIME_MS, lambda: self.NewDisplay())
+    if (self._sliding is not None):
+      if (not self._sliding.next()):
+        self._wrapper.AddEvent(self._DARK_TIME_MS, lambda: self.NewDisplay())
+        self._sliding = None
 
     # schedule a function call for remaining time
     # we do this last with the right sleep time in case the frame computation takes a long time.

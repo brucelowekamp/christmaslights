@@ -11,7 +11,6 @@ class PixelDisplay(object):
     self._pixels= [ None ] * self._num_strands
     for i in range(self._num_strands):
       self._pixels[i] = array.array('B', [0] * (3 * self._strand_length[i]))
-    self._slide_remaining = max(self._strand_length)
     self._map = [] # tuples for all pixels of (strand_n, pixel_n )
     for i in range(self._num_strands):
       for j in range (self._strand_length[i]):
@@ -77,14 +76,15 @@ class PixelDisplay(object):
     self._draw = True
 
   # slide all strings left and return true/false if more to slide
+  # implemented as generator so it looks like a normal loop
   def SlideLeft(self):
-    if (self._slide_remaining > 0):
-      for i in range(self._num_strands):
+    for i in range(self._num_strands):
+      for j in range(len(self._pixels[i])//3):
         del self._pixels[i][0:3]
         self._pixels[i].extend(self._zero_pixel)
-      self._slide_remaining -= 1
-      self._draw = True
-    return self._slide_remaining > 0
+        self._draw = True
+        yield True
+    yield False # not pythonic, but we aren't calling it in a loop, either
 
   def SendDmx(self):
     if (self._draw):
