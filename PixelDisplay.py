@@ -4,7 +4,7 @@ from utils import *
 class PixelDisplay(object):
 
   class Strand(object):
-    # create strand of length pixels with prefix not used (except for slide)
+    # create strand of length pixels with prefix pixels not used (except for slide)
     # universe is starting universe
     def __init__(self, wrapper, universe, length, prefix, options):
       self._universe = universe
