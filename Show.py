@@ -22,6 +22,7 @@ class Show(object):
     self._SLIDE_START_MS = options.startslide*1000
     self._DARK_TIME_MS = options.darktime*1000
     self._options = options
+    PixelPatterns.SetOptions(options)
     self._wrapper = ClientWrapper()
 
     self._loop_count = 0
@@ -46,9 +47,9 @@ class Show(object):
     self._display = PixelDisplay(self._wrapper, self._options)
     self._relays = Relays(self._wrapper, self._options)
     if (self._options.pattern is not None):
-      PixelPatterns[self._options.pattern](self._display)
+      PixelPatterns.Patterns[self._options.pattern](self._display)
     else:
-      random.choice(PixelPatterns)(self._display)
+      random.choice(PixelPatterns.Patterns)(self._display)
     self._wrapper.AddEvent(0, lambda: self._relays.on(GPIO_FANS))
     self._wrapper.AddEvent(0, lambda: self._relays.on(GPIO_OLAF))
     self._wrapper.AddEvent(0, lambda: self._relays.off(GPIO_GRINCH))
@@ -98,6 +99,7 @@ def main():
   Show.SetArgs(parser)
   PixelDisplay.SetArgs(parser)
   Relays.SetArgs(parser)
+  PixelPatterns.SetArgs(parser)
   options = parser.parse_args()
   print "args are" , options
   show = Show(options)
