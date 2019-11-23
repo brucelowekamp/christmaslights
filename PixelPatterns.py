@@ -30,9 +30,9 @@ class PixelPatterns(object):
     print ("RGFade pattern")
     minf = PixelPatterns.options.fademin
     
-    for s in range(display.num_strands):
+    for s in display.strands():
 
-      set_size = display.StrandLength(s)//PixelPatterns.options.fadesets
+      set_size = s.length//PixelPatterns.options.fadesets
 
       for set in range(num_sets):
         base = set * set_size
@@ -44,7 +44,7 @@ class PixelPatterns(object):
           red = faded if set % 2 == 0 else 0
           green = 0 if set % 2 == 0 else faded
           delta = pixel if set % 2 == 0 else set_size - pixel - 1
-          display.ColorSetStrand(s, base + delta, red, green, 0) 
+          s.ColorSet(base + delta, red, green, 0) 
 
   @staticmethod
   def White(display):
@@ -55,12 +55,12 @@ class PixelPatterns(object):
   @staticmethod
   def Rainbow(display):
     print ("Rainbow")
-    for s in range(display.num_strands):
-      l = display.StrandLength(s)
-      for p in range(l):
+    for s in display.strands():
+      l = s.length
+      for p in s:
         #(r, g, b) = colorsys.hsv_to_rgb((p*1.0)/l, 1, 1)
         #display.ColorSetStrand(s, p, int(r*255), int(g*255), int(b*255))
         (r, g, b) = wavelength_to_rgb((l-p-1.0)/l*370+380)
-        display.ColorSetStrand(s, p, r, g, b)
+        s.ColorSet(p, r, g, b)
 
 PixelPatterns.Patterns = [PixelPatterns.RedGreen, PixelPatterns.RGFade, PixelPatterns.White, PixelPatterns.Rainbow]
