@@ -1,0 +1,4 @@
+# add to /etc/networking/interfaces.d for local connection to E6804 (at 10.10.10.10)
+auto eth0
+iface eth0 inet static
+    address 10.10.10.1/8
