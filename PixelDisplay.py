@@ -26,7 +26,7 @@ class PixelDisplay(object):
 
     # maybe it would be better to have pixels as a class, but no
     def __iter__(self):
-      return iter(range(self._drawable_length))
+      return iter(xrange(self._drawable_length))
 
     #return [R, G, B] of pixel
     def ColorGet(self, pixel):
@@ -43,7 +43,7 @@ class PixelDisplay(object):
       self._draw = True
 
     def SlideLeft(self):
-      for j in range(self._channels//3):
+      for j in xrange(self._channels//3):
         del self._pixels[0:3]
         self._pixels.extend(PixelDisplay.Strand._zero_pixel)
         self._draw = True
@@ -52,7 +52,7 @@ class PixelDisplay(object):
     def SendDmx(self):
       if (self._draw):
         u = self._universe
-        bases = range(0, self._channels, self._maxchannels)
+        bases = xrange(0, self._channels, self._maxchannels)
         for b in bases:
           data = self._pixels[b: min(b+self._maxchannels, self._channels)]
           self._wrapper.Client().SendDmx(u, data, DmxSent)
