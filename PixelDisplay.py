@@ -32,7 +32,7 @@ class PixelDisplay(object):
     def ColorGet(self, pixel):
       assert pixel < self._drawable_length
       pixel += self._prefix
-      return self._pixels[p*3+0], self._pixels[p*3+1],self._pixels[p*3+2]
+      return [self._pixels[pixel*3+0], self._pixels[pixel*3+1],self._pixels[pixel*3+2]]
 
     def ColorSet(self, pixel, red, green, blue):
       assert pixel < self._drawable_length

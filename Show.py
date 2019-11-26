@@ -2,6 +2,7 @@ from ola.ClientWrapper import ClientWrapper
 from PixelDisplay import PixelDisplay
 from PixelPatterns import PixelPatterns
 from Relays import Relays
+from Sparkler import *
 import argparse
 import array
 import gc
@@ -42,6 +43,7 @@ class Show(object):
     print "start slide"
     gc.collect()
     self._sliding = self._display.SlideLeft()
+    self._sparkler = None
 
   def NewDisplay(self):
     gc.collect()
@@ -50,9 +52,10 @@ class Show(object):
     self._display = PixelDisplay(self._wrapper, self._options)
     self._relays = Relays(self._wrapper, self._options)
     if (self._options.pattern is not None):
-      PixelPatterns.Patterns[self._options.pattern](self._display)
+      pattern = PixelPatterns.Patterns[self._options.pattern]
     else:
-      random.choice(PixelPatterns.Patterns)(self._display)
+      pattern = random.choice(PixelPatterns.Patterns)
+    self._sparkler = pattern(self._display)
     self._wrapper.AddEvent(0, lambda: self._relays.on(GPIO_FANS))
     self._wrapper.AddEvent(0, lambda: self._relays.on(GPIO_OLAF))
     self._wrapper.AddEvent(0, lambda: self._relays.off(GPIO_GRINCH))
@@ -74,7 +77,9 @@ class Show(object):
       if (not self._sliding.next()):
         self._wrapper.AddEvent(self._DARK_TIME_MS, lambda: self.NewDisplay())
         self._sliding = None
-
+    elif (self._sparkler is not None):
+      self._sparkler.Sparkle()
+      
     # schedule a function call for remaining time
     # we do this last with the right sleep time in case the frame computation takes a long time.
     next_target = self._target_time + TICK_INTERVAL_S

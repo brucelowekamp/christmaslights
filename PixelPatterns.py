@@ -1,6 +1,7 @@
 import math
 from wl_to_rgb import wavelength_to_rgb
 import colorsys
+from Sparkler import *
 
 class PixelPatterns(object):
   fade_min = 6
@@ -25,7 +26,8 @@ class PixelPatterns(object):
       red = (i//PixelPatterns.options.rgsize)%2 == 0
       display.ColorSet(p, 255 if red else 0, 0 if red else 255, 0)
       i+=1
-
+    return None
+  
   @staticmethod
   def RGFade(display):
     print ("RGFade pattern")
@@ -49,13 +51,15 @@ class PixelPatterns(object):
           delta = pixel if set % 2 == 0 else set_size - pixel - 1
           s.ColorSet(base + delta, red, green, 0)
         base += blocks[set]
+    return None
 
   @staticmethod
   def White(display):
     print ("White")
     for p in display:
       display.ColorSet(p, 255, 255, 255)
-
+    return Sparkler(display, 0, 0, 255, 4, PixelPatterns.options)
+  
   @staticmethod
   def Rainbow(display):
     print ("Rainbow")
@@ -66,5 +70,6 @@ class PixelPatterns(object):
         #display.ColorSetStrand(s, p, int(r*255), int(g*255), int(b*255))
         (r, g, b) = wavelength_to_rgb((l-p-1.0)/l*370+380)
         s.ColorSet(p, r, g, b)
+    return Sparkler(display, 255, 255, 255, 6, PixelPatterns.options)
 
 PixelPatterns.Patterns = [PixelPatterns.RedGreen, PixelPatterns.RGFade, PixelPatterns.White, PixelPatterns.Rainbow]
