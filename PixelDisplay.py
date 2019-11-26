@@ -6,9 +6,12 @@ class PixelDisplay(object):
   class Strand(object):
     # create strand of length pixels with prefix pixels not used (except for slide)
     # universe is starting universe
-    def __init__(self, wrapper, universe, length, prefix, options):
+    # maxchannels is max channels per universe, universe increments by one past
+    def __init__(self, wrapper, universe, length, prefix, options, maxchannels=510):
       self._universe = universe
-      self._pixels = array.array('B', [0] * 3 * length)
+      self._maxchannels = maxchannels 
+      self._channels = length * 3
+      self._pixels = array.array('B', [0] * self._channels)
       self._prefix = prefix
       self._drawable_length = length - prefix
       self._draw = False
@@ -40,7 +43,7 @@ class PixelDisplay(object):
       self._draw = True
 
     def SlideLeft(self):
-      for j in range(len(self._pixels)//3):
+      for j in range(self._channels//3):
         del self._pixels[0:3]
         self._pixels.extend(PixelDisplay.Strand._zero_pixel)
         self._draw = True
@@ -48,13 +51,19 @@ class PixelDisplay(object):
 
     def SendDmx(self):
       if (self._draw):
-        self._wrapper.Client().SendDmx(self._universe, self._pixels, DmxSent)
+        u = self._universe
+        bases = range(0, self._channels, self._maxchannels)
+        for b in bases:
+          data = self._pixels[b: min(b+self._maxchannels, self._channels)]
+          self._wrapper.Client().SendDmx(u, data, DmxSent)
+          u += 1
       self._draw = False
     
   def __init__(self, wrapper, options):
     self._draw = False
     self._wrapper = wrapper
     self._strands = []
+    #self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 0, options, 300))
     self._strands.append(PixelDisplay.Strand(wrapper, 1, 100, 0, options))
     self._strands.append(PixelDisplay.Strand(wrapper, 2, 50, 0, options))
     self._length = sum(map(lambda s: s.length, self._strands))
