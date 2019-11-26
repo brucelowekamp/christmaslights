@@ -26,7 +26,7 @@ class PixelPatterns(object):
       red = (i//PixelPatterns.options.rgsize)%2 == 0
       display.ColorSet(p, 255 if red else 0, 0 if red else 255, 0)
       i+=1
-    return None
+    return Sparkler(display, 255, 255, 255, 6, PixelPatterns.options)
   
   @staticmethod
   def RGFade(display):

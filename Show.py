@@ -106,6 +106,7 @@ def main():
   PixelDisplay.SetArgs(parser)
   Relays.SetArgs(parser)
   PixelPatterns.SetArgs(parser)
+  Sparkler.SetArgs(parser)
   options = parser.parse_args()
   print "args are" , options
   show = Show(options)
