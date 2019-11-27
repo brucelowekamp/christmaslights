@@ -3,16 +3,14 @@ import random
 class Sparkler(object):
   @staticmethod
   def SetArgs(parser):
-    parser.add_argument('--sparkpct', type=float, default=0.02, help="proportion of pixels sparkling")
-
+    pass
   
-  def __init__(self, display, red, green, blue, steps, options, percent=None):
+  def __init__(self, display, red, green, blue, steps=4, fraction=0.02):
     self._display = display
-    self._options = options
+    #self._options = options
     self._Target = [red, green, blue]
     self._Steps = steps
-    self._NumFlashers = int(( options.sparkpct if percent is None else percent)
-                            * self._display.length)
+    self._NumFlashers = min(int(fraction * self._display.length), 1)
     self._flashers = []
     self._being_flashed = set([])
 
