@@ -3,7 +3,7 @@ from utils import *
 
 class Relays(object):
   def __init__(self, wrapper, options):
-    self._dmx = array.array('B', [0, 0, 0])
+    self._dmx = array.array('B', [0] * 13)
     self._draw = False
     self._universe = 10
     self._wrapper = wrapper
@@ -18,10 +18,12 @@ class Relays(object):
     return self._draw
   
   def on(self, channel):
+    print "relay on", channel
     self._dmx[channel] = 255
     self._draw = True
 
   def off(self, channel):
+    print "relay off", channel
     self._dmx[channel] = 0
     self._draw = True
 

@@ -79,7 +79,7 @@ class PixelPatterns(object):
 
   @staticmethod
   def RGFlow(display):
-    print ("White")
+    print ("RGFlow")
     for p in display:
       display.ColorSet(p, 255, 0, 0)
     return Sparkler(display, 0, 255, 0, PixelPatterns.options.flowsteps, PixelPatterns.options.flowfrac)

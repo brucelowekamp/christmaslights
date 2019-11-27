@@ -3,6 +3,7 @@ from PixelDisplay import PixelDisplay
 from PixelPatterns import PixelPatterns
 from Relays import Relays
 from Sparkler import *
+from GrinchShow import *
 import argparse
 import array
 import gc
@@ -21,8 +22,6 @@ GPIO_GRINCH = 2
 class Show(object):
 
   def __init__(self, options):
-    self._SLIDE_START_MS = options.startslide*1000
-    self._DARK_TIME_MS = options.darktime*1000
     self._options = options
     PixelPatterns.SetOptions(options)
     self._wrapper = ClientWrapper()
@@ -35,10 +34,30 @@ class Show(object):
 
   @staticmethod
   def SetArgs(parser):
+    parser.add_argument('--ondelay', type=int, default=3, help="delay between grinch sleigh appear and lights on")
+    parser.add_argument('--grinchoffdelay', type=int, default=3, help="delay between grinch sleigh appear and lights turning off")
     parser.add_argument('--startslide', type=int, default=100, help="start grinch slide at seconds")
     parser.add_argument('--darktime', type=int, default=6, help="time to remain dark after slide before reset")
     parser.add_argument('--pattern', type=int, help="run only pattern index i")
+
+  def Start(self):
+    print "START"
+    self._loop_count = 0
+    self._sliding = None
+    self._display = PixelDisplay(self._wrapper, self._options)
+    self._relays = Relays(self._wrapper, self._options)
+    self._sparkler = None
+
+    self.LoadTimings(GrinchShowStart(self._options))
+                   
+  def StartGrinch(self):
+    print "GRINCH"
+    self.LoadTimings(GrinchShowAppear(self._options))
     
+  def EndGrinch(self):
+    print "GRINCHGOING"
+    self.LoadTimings(GrinchFinished(self._options))
+   
   def StartSlide(self):
     print "start slide"
     gc.collect()
@@ -47,24 +66,32 @@ class Show(object):
 
   def NewDisplay(self):
     gc.collect()
-    self._loop_count = 0
-    self._sliding = None
-    self._display = PixelDisplay(self._wrapper, self._options)
-    self._relays = Relays(self._wrapper, self._options)
     if (self._options.pattern is not None):
       pattern = PixelPatterns.Patterns[self._options.pattern]
     else:
       pattern = random.choice(PixelPatterns.Patterns)
     self._sparkler = pattern(self._display)
-    self._wrapper.AddEvent(0, lambda: self._relays.on(GPIO_FANS))
-    self._wrapper.AddEvent(0, lambda: self._relays.on(GPIO_OLAF))
-    self._wrapper.AddEvent(0, lambda: self._relays.off(GPIO_GRINCH))
-    self._wrapper.AddEvent(self._SLIDE_START_MS-3000, lambda: self._relays.off(GPIO_OLAF))
-    self._wrapper.AddEvent(self._SLIDE_START_MS-3000, lambda: self._relays.on(GPIO_GRINCH))
-    self._wrapper.AddEvent(self._SLIDE_START_MS, lambda: self.StartSlide())
-    self._wrapper.AddEvent(0, lambda: self._relays.off(GPIO_GRINCH))
-    #self._wrapper.AddEvent(self._RESET_DISPLAY_MS, lambda: self.NewDisplay())
 
+  def LoadTimings(self, events):
+    #print "adding events", events
+    for e in events:
+      ms = int(e[0] * 1000)
+      # switch... oh yeah
+      if (e[1] == Commands.ON):
+        self._wrapper.AddEvent(ms, lambda x=e[2]: self._relays.on(x))
+      elif (e[1] == Commands.OFF):
+        self._wrapper.AddEvent(ms, lambda x=e[2]: self._relays.off(x))
+      elif (e[1] == Commands.START_GRINCH):
+        self._wrapper.AddEvent(ms, lambda: self.StartGrinch())
+      elif (e[1] == Commands.PIXELS_ON):
+        self._wrapper.AddEvent(ms, lambda: self.NewDisplay())
+      elif (e[1] == Commands.FINISH_SLIDE):
+        pass
+      elif (e[1] == Commands.RESTART):
+        self._wrapper.AddEvent(ms, lambda: self.Start())
+      elif (e[1] == Commands.START_SLIDE):
+        self._wrapper.AddEvent(ms, lambda: self.StartSlide())
+        
   # send frame precomputed last call, then compute frame and schedule next call
   def SendFrame(self):
     # send (if pending), do first thing to time as precisely as we can
@@ -75,8 +102,8 @@ class Show(object):
     
     if (self._sliding is not None):
       if (not self._sliding.next()):
-        self._wrapper.AddEvent(self._DARK_TIME_MS, lambda: self.NewDisplay())
         self._sliding = None
+        self.EndGrinch()
     elif (self._sparkler is not None):
       self._sparkler.Sparkle()
       
@@ -95,7 +122,7 @@ class Show(object):
     self._loop_count += 1
 
   def Run(self):
-    self.NewDisplay()
+    self.Start()
     self.SendFrame()
     self._wrapper.Run()
 
