@@ -1,4 +1,5 @@
 import array
+import random
 from utils import *
 
 class PixelDisplay(object):
@@ -67,7 +68,11 @@ class PixelDisplay(object):
     self._strands.append(PixelDisplay.Strand(wrapper, 1, 100, 0, options))
     self._strands.append(PixelDisplay.Strand(wrapper, 2, 50, 0, options))
     self._length = sum(map(lambda s: s.length, self._strands))
-
+    self._map = []
+    for s in self._strands:
+      for p in s:
+        self._map.append( (s, p) )
+        
   @staticmethod
   def SetArgs(parser):
     None
@@ -90,6 +95,10 @@ class PixelDisplay(object):
   def strands(self):
     return iter(self._strands)
 
+  # random pixel from across all pixels
+  def random(self):
+    return random.choice(self._map)
+  
   #return [R, G, B] of pixel across all strands (by iterator)
   def ColorGet(self, pixel):
     (s, p) = pixel
