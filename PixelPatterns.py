@@ -57,8 +57,8 @@ class PixelPatterns(object):
   def White(display):
     print ("White")
     for p in display:
-      display.ColorSet(p, 255, 255, 255)
-    return Sparkler(display, 0, 0, 255, 4, PixelPatterns.options)
+      display.ColorSet(p, 175, 175, 100)
+    return Sparkler(display, 0, 0, 255, 15, PixelPatterns.options, percent=0.5)
   
   @staticmethod
   def Rainbow(display):
@@ -72,4 +72,11 @@ class PixelPatterns(object):
         s.ColorSet(p, r, g, b)
     return Sparkler(display, 255, 255, 255, 6, PixelPatterns.options)
 
-PixelPatterns.Patterns = [PixelPatterns.RedGreen, PixelPatterns.RGFade, PixelPatterns.White, PixelPatterns.Rainbow]
+  @staticmethod
+  def RGFlow(display):
+    print ("White")
+    for p in display:
+      display.ColorSet(p, 255, 0, 0)
+    return Sparkler(display, 0, 255, 0, 15, PixelPatterns.options, percent=0.5)
+
+PixelPatterns.Patterns = [PixelPatterns.RedGreen, PixelPatterns.RGFade, PixelPatterns.White, PixelPatterns.Rainbow, PixelPatterns.RGFlow]

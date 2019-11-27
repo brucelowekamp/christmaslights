@@ -6,12 +6,13 @@ class Sparkler(object):
     parser.add_argument('--sparkpct', type=float, default=0.02, help="proportion of pixels sparkling")
 
   
-  def __init__(self, display, red, green, blue, steps, options):
+  def __init__(self, display, red, green, blue, steps, options, percent=None):
     self._display = display
     self._options = options
     self._Target = [red, green, blue]
     self._Steps = steps
-    self._NumFlashers = int(options.sparkpct * self._display.length)
+    self._NumFlashers = int(( options.sparkpct if percent is None else percent)
+                            * self._display.length)
     self._flashers = []
     self._being_flashed = set([])
 
