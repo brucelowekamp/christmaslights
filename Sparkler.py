@@ -10,7 +10,6 @@ class Sparkler(object):
     self._display = display
     self._options = options
     self._Target = [red, green, blue]
-    self._MaxStep = 0.1
     self._Steps = steps
     self._NumFlashers = int(options.sparkpct * self._display.length)
     self._flashers = []
@@ -46,7 +45,7 @@ class Sparkler(object):
       flasher._onstep -= 1
       if (flasher._onstep > -1 * self._Steps):
         for i in xrange(3):
-          if flasher._onstep > 0:
+          if flasher._onstep >= 0:
             flasher._curcolor[i] = flasher._curcolor[i] + flasher._delta[i]
           else:
             flasher._curcolor[i] = flasher._curcolor[i] - flasher._delta[i]
@@ -57,6 +56,7 @@ class Sparkler(object):
             flasher._curcolor[i] = 255
       else:
         flasher._curcolor = flasher._orig
+      #print "step ", flasher._onstep, " colors", flasher._curcolor
       self._display.ColorSet(flasher._pixel, int(flasher._curcolor[0]), int(flasher._curcolor[1]), int(flasher._curcolor[2]))
 
       finished = filter(lambda f: f._onstep <= -1 * self._Steps, self._flashers)
