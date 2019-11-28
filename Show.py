@@ -63,7 +63,6 @@ class Show(object):
     gc.collect()
     self._sliding = self._display.SlideLeft()
     self._finished = False
-    self._sparkler = None
 
   def FinishSlide(self):
     print "finish slide"
@@ -110,8 +109,14 @@ class Show(object):
     if (self._sliding is not None):
       if (not self._sliding.next()):
         self._sliding = None
-        if (not self._finished): self.EndGrinch()
-    elif (self._sparkler is not None):
+        if (not self._finished):
+          # schedule final scene after first slide finishes
+          self.EndGrinch()
+        else:
+          # after final slideoff and disappear, stop sparkling
+          self._sparkler = None
+
+    if (self._sparkler is not None):
       self._sparkler.Sparkle()
       
     # schedule a function call for remaining time

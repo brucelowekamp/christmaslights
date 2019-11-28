@@ -9,13 +9,15 @@ class PixelDisplay(object):
     # hold pixels of prefix remain until slide restarts
     # universe is starting universe
     # maxchannels is max channels per universe, universe increments by one past
+    # buffer created is twice required length so slide is implemented by shifting window not by moving bits
     def __init__(self, wrapper, universe, length, prefix, hold, options, maxchannels=510):
       self._universe = universe
       self._maxchannels = maxchannels 
       self._channels = length * 3
-      self._pixels = array.array('B', [0] * self._channels)
+      self._pixels = array.array('B', [0] * self._channels * 2)
       self._prefix = prefix
       self._hold = hold
+      self._slid = 0
       self._drawable_length = length - prefix
       self._draw = True
       self._wrapper = wrapper
@@ -48,9 +50,7 @@ class PixelDisplay(object):
     def SlideLeft(self, finish = False):
       n = self._channels//3 - self._hold if not finish else self._hold
       for j in xrange(n):
-        # note that this copies horribly
-        del self._pixels[0:3]
-        self._pixels.extend(PixelDisplay.Strand._zero_pixel)
+        self._slid += 3
         self._draw = True
         yield True
 
@@ -58,9 +58,9 @@ class PixelDisplay(object):
       if (self._draw):
         u = self._universe
         # copies horribly to spread across universes
-        bases = xrange(0, self._channels, self._maxchannels)
+        bases = xrange(0+self._slid, self._channels+self._slid, self._maxchannels)
         for b in bases:
-          data = self._pixels[b: min(b+self._maxchannels, self._channels)]
+          data = self._pixels[b: min(b+self._maxchannels, self._channels+self._slid)]
           self._wrapper.Client().SendDmx(u, data, DmxSent)
           u += 1
       self._draw = False
