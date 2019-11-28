@@ -92,9 +92,9 @@ def GrinchFinished(options):
     (s+0.3, Commands.ON, Relay.GRINCH),
     (s+1, Commands.OFF, Relay.GRINCH),
     (s+1, Commands.FINISH_SLIDE),
-    (s+1.3, Commands.ON, Relay.GRINCH),
+    (s+1.4, Commands.ON, Relay.GRINCH),
     (s+1.9, Commands.OFF, Relay.GRINCH),
-    (s+2+options.darktime, Commands.RESTART)
+    (s+3+options.darktime, Commands.RESTART)
   ]
 
     

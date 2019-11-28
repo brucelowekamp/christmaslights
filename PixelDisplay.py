@@ -6,16 +6,18 @@ class PixelDisplay(object):
 
   class Strand(object):
     # create strand of length pixels with prefix pixels not used (except for slide)
+    # hold pixels of prefix remain until slide restarts
     # universe is starting universe
     # maxchannels is max channels per universe, universe increments by one past
-    def __init__(self, wrapper, universe, length, prefix, options, maxchannels=510):
+    def __init__(self, wrapper, universe, length, prefix, hold, options, maxchannels=510):
       self._universe = universe
       self._maxchannels = maxchannels 
       self._channels = length * 3
       self._pixels = array.array('B', [0] * self._channels)
       self._prefix = prefix
+      self._hold = hold
       self._drawable_length = length - prefix
-      self._draw = False
+      self._draw = True
       self._wrapper = wrapper
       self._options = options
 
@@ -43,8 +45,10 @@ class PixelDisplay(object):
       self._pixels[pixel*3+2] = blue
       self._draw = True
 
-    def SlideLeft(self):
-      for j in xrange(self._channels//3):
+    def SlideLeft(self, finish = False):
+      n = self._channels//3 - self._hold if not finish else self._hold
+      for j in xrange(n):
+        # note that this copies horribly
         del self._pixels[0:3]
         self._pixels.extend(PixelDisplay.Strand._zero_pixel)
         self._draw = True
@@ -53,6 +57,7 @@ class PixelDisplay(object):
     def SendDmx(self):
       if (self._draw):
         u = self._universe
+        # copies horribly to spread across universes
         bases = xrange(0, self._channels, self._maxchannels)
         for b in bases:
           data = self._pixels[b: min(b+self._maxchannels, self._channels)]
@@ -65,8 +70,8 @@ class PixelDisplay(object):
     self._wrapper = wrapper
     self._strands = []
     #self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 0, options, 300))
-    self._strands.append(PixelDisplay.Strand(wrapper, 1, 100, 0, options))
-    self._strands.append(PixelDisplay.Strand(wrapper, 2, 50, 0, options))
+    self._strands.append(PixelDisplay.Strand(wrapper, 1, 100, 20, 10, options))
+    self._strands.append(PixelDisplay.Strand(wrapper, 2, 50, 20, 10, options))
     self._length = sum(map(lambda s: s.length, self._strands))
     self._map = []
     for s in self._strands:
@@ -75,7 +80,7 @@ class PixelDisplay(object):
         
   @staticmethod
   def SetArgs(parser):
-    None
+    pass
 
   @property
   def length(self):
@@ -111,9 +116,9 @@ class PixelDisplay(object):
 
   # slide all strings left and return true/false if more to slide
   # implemented as generator so it looks like a normal loop
-  def SlideLeft(self):
+  def SlideLeft(self, finish = False):
     for s in self._strands:
-      for p in s.SlideLeft():
+      for p in s.SlideLeft(finish):
         yield True
     yield False # not pythonic, but we aren't calling it in a loop, either
 

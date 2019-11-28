@@ -62,8 +62,15 @@ class Show(object):
     print "start slide"
     gc.collect()
     self._sliding = self._display.SlideLeft()
+    self._finished = False
     self._sparkler = None
 
+  def FinishSlide(self):
+    print "finish slide"
+    gc.collect()
+    self._sliding = self._display.SlideLeft(True)
+    self._finished = True
+    
   def NewDisplay(self):
     gc.collect()
     if (self._options.pattern is not None):
@@ -86,7 +93,7 @@ class Show(object):
       elif (e[1] == Commands.PIXELS_ON):
         self._wrapper.AddEvent(ms, lambda: self.NewDisplay())
       elif (e[1] == Commands.FINISH_SLIDE):
-        pass
+        self._wrapper.AddEvent(ms, lambda: self.FinishSlide())
       elif (e[1] == Commands.RESTART):
         self._wrapper.AddEvent(ms, lambda: self.Start())
       elif (e[1] == Commands.START_SLIDE):
@@ -103,7 +110,7 @@ class Show(object):
     if (self._sliding is not None):
       if (not self._sliding.next()):
         self._sliding = None
-        self.EndGrinch()
+        if (not self._finished): self.EndGrinch()
     elif (self._sparkler is not None):
       self._sparkler.Sparkle()
       
