@@ -39,6 +39,7 @@ class Show(object):
     parser.add_argument('--startslide', type=int, default=35, help="start grinch slide at seconds")
     parser.add_argument('--darktime', type=int, default=6, help="time to remain dark after slide before reset")
     parser.add_argument('--pattern', type=int, help="run only pattern index i")
+    parser.add_argument('--nosleigh', action='store_true', help="no grinch sleigh for high winds")
 
   def Start(self):
     print "START"
@@ -82,6 +83,9 @@ class Show(object):
     #print "adding events", events
     for e in events:
       ms = int(e[0] * 1000)
+      if (self._options.nosleigh and len(e) == 3):
+        if (e[2] == Relay.GRINCH_SLEIGH_FAN): e = (e[0], e[1], Relay.GRINCH_FAN)
+        elif (e[2] == Relay.GRINCH_SLEIGH): e = (e[0], e[1], Relay.GRINCH)
       # switch... oh yeah
       if (e[1] == Commands.ON):
         self._wrapper.AddEvent(ms, lambda x=e[2]: self._relays.on(x))

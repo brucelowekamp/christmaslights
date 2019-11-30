@@ -11,7 +11,8 @@ class Relay(enum.IntEnum):
 
   # next 4 are leaf relay max 10A for fans
   OLAF_FAN = 8
-  GRINCH_FANS= 9
+  GRINCH_FAN = 9
+  GRINCH_SLEIGH_FAN = 10
 
   # last is local relay for 12V PS (for pixels)
   # relay is NC so we don't touch it during the show, used by show drivers 
@@ -34,7 +35,8 @@ def GrinchShowStart(options):
   return [
     #starting state
     (0, Commands.ON, Relay.OLAF_FAN),
-    (0, Commands.ON, Relay.GRINCH_FANS),
+    (0, Commands.ON, Relay.GRINCH_FAN),
+    (0, Commands.ON, Relay.GRINCH_SLEIGH_FAN),
     (0, Commands.OFF, Relay.OLAF),
     (0, Commands.OFF, Relay.LASER_PROJ),
     (0, Commands.OFF, Relay.REINDEER),
