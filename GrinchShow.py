@@ -14,6 +14,7 @@ class Relay(enum.IntEnum):
   GRINCH_FANS= 9
 
   # last is local relay for 12V PS (for pixels)
+  # relay is NC so we don't touch it during the show, used by show drivers 
   POWER = 12
 
 class Commands(enum.Enum):
