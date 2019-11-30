@@ -35,8 +35,8 @@ class Show(object):
   @staticmethod
   def SetArgs(parser):
     parser.add_argument('--ondelay', type=int, default=3, help="delay between grinch sleigh appear and lights on")
-    parser.add_argument('--grinchoffdelay', type=int, default=3, help="delay between grinch sleigh appear and lights turning off")
-    parser.add_argument('--startslide', type=int, default=100, help="start grinch slide at seconds")
+    parser.add_argument('--grinchoffdelay', type=int, default=2, help="delay between grinch sleigh appear and lights turning off")
+    parser.add_argument('--startslide', type=int, default=35, help="start grinch slide at seconds")
     parser.add_argument('--darktime', type=int, default=6, help="time to remain dark after slide before reset")
     parser.add_argument('--pattern', type=int, help="run only pattern index i")
 

@@ -69,9 +69,12 @@ class PixelDisplay(object):
     self._draw = False
     self._wrapper = wrapper
     self._strands = []
-    #self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 0, options, 300))
-    self._strands.append(PixelDisplay.Strand(wrapper, 1, 100, 20, 10, options))
-    self._strands.append(PixelDisplay.Strand(wrapper, 2, 50, 20, 10, options))
+
+    self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 48, 26, options))
+    self._strands.append(PixelDisplay.Strand(wrapper, 2, 250, 18, 0, options))
+    #self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 0, 0, options))
+    #self._strands.append(PixelDisplay.Strand(wrapper, 2, 250, 0, 0, options))
+
     self._length = sum(map(lambda s: s.length, self._strands))
     self._map = []
     for s in self._strands:

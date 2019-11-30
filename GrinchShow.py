@@ -43,45 +43,45 @@ def GrinchShowStart(options):
 
     # now start to turn things on
     (on, Commands.ON, Relay.OLAF),
-    (on+1, Commands.ON, Relay.LASER_PROJ),
-    (on+2, Commands.ON, Relay.REINDEER),
-    (on+3, Commands.ON, Relay.SNOWMAN),
-    (on+4, Commands.PIXELS_ON),
+    (on+1, Commands.ON, Relay.REINDEER),
+    (on+2, Commands.ON, Relay.SNOWMAN),
+    (on+3, Commands.ON, Relay.LASER_PROJ),
+    (on+5, Commands.PIXELS_ON),
 
-    (on+6, Commands.OFF, Relay.GRINCH_SLEIGH),
+    (on+7, Commands.OFF, Relay.GRINCH_SLEIGH),
     (on+6+options.startslide, Commands.START_GRINCH),
   ]
 
 # when grinch appears then sequence until all off
 def GrinchShowAppear(options):
   off = options.grinchoffdelay
-  s = off + 6 + options.grinchoffdelay
-  t = s + 2 + options.grinchoffdelay
+  s = off + 6 + 1
+  t = s + 1.5
   return [
     (0, Commands.ON, Relay.GRINCH_SLEIGH),
-    (0.2, Commands.OFF, Relay.GRINCH_SLEIGH),
-    (0.7, Commands.ON, Relay.GRINCH_SLEIGH),
-    (1.1, Commands.OFF, Relay.GRINCH_SLEIGH),
-    (1.5, Commands.ON, Relay.GRINCH_SLEIGH),
+    (0.1, Commands.OFF, Relay.GRINCH_SLEIGH),
+    (0.3, Commands.ON, Relay.GRINCH_SLEIGH),
+    (0.6, Commands.OFF, Relay.GRINCH_SLEIGH),
+    (1.0, Commands.ON, Relay.GRINCH_SLEIGH),
 
     (off, Commands.OFF, Relay.OLAF),
-    (off+2, Commands.OFF, Relay.LASER_PROJ),
-    (off+4, Commands.OFF, Relay.REINDEER),
-    (off+6, Commands.OFF, Relay.SNOWMAN),
+    (off+2, Commands.OFF, Relay.REINDEER),
+    (off+4, Commands.OFF, Relay.SNOWMAN),
+    (off+6, Commands.OFF, Relay.LASER_PROJ),
 
     (s+0, Commands.OFF, Relay.GRINCH_SLEIGH),
-    (s+0.3, Commands.ON, Relay.GRINCH_SLEIGH),
-    (s+1, Commands.OFF, Relay.GRINCH_SLEIGH),
-    (s+1.3, Commands.ON, Relay.GRINCH_SLEIGH),
-    (s+1.9, Commands.OFF, Relay.GRINCH_SLEIGH),
+    (s+0.1, Commands.ON, Relay.GRINCH_SLEIGH),
+    (s+.4, Commands.OFF, Relay.GRINCH_SLEIGH),
+    (s+.8, Commands.ON, Relay.GRINCH_SLEIGH),
+    (s+1.1, Commands.OFF, Relay.GRINCH_SLEIGH),
 
     (t+0, Commands.ON, Relay.GRINCH),
-    (t+0.2, Commands.OFF, Relay.GRINCH),
-    (t+0.7, Commands.ON, Relay.GRINCH),
-    (t+1.1, Commands.OFF, Relay.GRINCH),
-    (t+1.5, Commands.ON, Relay.GRINCH),
+    (t+0.1, Commands.OFF, Relay.GRINCH),
+    (t+0.3, Commands.ON, Relay.GRINCH),
+    (t+0.4, Commands.OFF, Relay.GRINCH),
+    (t+0.8, Commands.ON, Relay.GRINCH),
     
-    (t+2.5, Commands.START_SLIDE)
+    (t+1.5, Commands.START_SLIDE)
   ]
 
 

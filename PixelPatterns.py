@@ -63,6 +63,7 @@ class PixelPatterns(object):
     print ("White")
     for p in display:
       display.ColorSet(p, 175, 175, 100)
+
     return Sparkler(display, 0, 0, 255, PixelPatterns.options.flowsteps, PixelPatterns.options.flowfrac)
   
   @staticmethod
