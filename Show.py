@@ -25,7 +25,8 @@ class Show(object):
     self._options = options
     PixelPatterns.SetOptions(options)
     self._wrapper = ClientWrapper()
-
+    self._showcount = 0
+    
     self._loop_count = 0
     self._relays = None
     self._display = None
@@ -76,7 +77,8 @@ class Show(object):
     if (self._options.pattern is not None):
       pattern = PixelPatterns.Patterns[self._options.pattern]
     else:
-      pattern = random.choice(PixelPatterns.Patterns)
+      pattern = PixelPatterns.Patterns[self._showcount % len(PixelPatterns.Patterns)]
+      self._showcount += 1
     self._sparkler = pattern(self._display)
 
   def LoadTimings(self, events):
