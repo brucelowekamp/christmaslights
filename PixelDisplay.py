@@ -25,6 +25,7 @@ class PixelDisplay(object):
 
     _zero_pixel = array.array('B', [0, 0, 0])
 
+    # probably more pythonic to implement __len__
     @property
     def length(self):
       return self._drawable_length
