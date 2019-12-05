@@ -70,6 +70,7 @@ class PixelDisplay(object):
     self._draw = False
     self._wrapper = wrapper
     self._strands = []
+    self._options = options
 
     self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 48, 26, options))
     self._strands.append(PixelDisplay.Strand(wrapper, 2, 250, 18, 0, options))
@@ -93,6 +94,10 @@ class PixelDisplay(object):
   @property
   def num_strands(self):
     return len(self._strands)
+
+  @property
+  def options(self):
+    return self._options
 
   # iterates across the map.  map tuples can be treated transparently and passed to ColorSet
   def __iter__(self):

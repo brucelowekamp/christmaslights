@@ -6,7 +6,7 @@ except ImportError:
 from PixelDisplay import PixelDisplay
 from PixelPatterns import PixelPatterns
 from Relays import Relays
-from Sparkler import *
+from Sparkler import Sparkler
 from GrinchShow import *
 import argparse
 import array
@@ -45,6 +45,10 @@ class Show(object):
     parser.add_argument('--darktime', type=int, default=6, help="time to remain dark after slide before reset")
     parser.add_argument('--pattern', type=int, help="run only pattern index i")
     parser.add_argument('--nosleigh', action='store_true', help="no grinch sleigh for high winds")
+
+  @property
+  def options(self):
+    return self._options
 
   def Start(self):
     print "START"
