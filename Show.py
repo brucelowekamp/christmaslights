@@ -1,4 +1,8 @@
-from ola.ClientWrapper import ClientWrapper
+try:
+  from ola.ClientWrapper import ClientWrapper
+except ImportError:
+  print "NO OLA INSTALLED!!!  USING STUB OLA!!!"
+  from OLAStubClientWrapper import ClientWrapper
 from PixelDisplay import PixelDisplay
 from PixelPatterns import PixelPatterns
 from Relays import Relays
