@@ -1,12 +1,28 @@
 import random
 
+# sparkler is used to twinkle (flash white), to flow (slowly change to a color and back)
+# and to permanently change to a new color
 class Sparkler(object):
   @staticmethod
   def SetArgs(parser):
-    pass
+    parser.add_argument('--sparkfrac', type=float, default=0.01, help="proportion of pixels sparkling")
+    parser.add_argument('--flowfrac', type=float, default=0.5, help="proportion of pixels in flow")
+    parser.add_argument('--sparksteps', type=int, default=2, help="steps up then down in spark")
+    parser.add_argument('--flowsteps', type=int, default=15, help="steps up then down in flow")
 
-  # sparkler is used to twinkle (flash white), to flow (slowly change to a color and back)
-  # and to permanently change to a new color
+  # Flow is a factory for a Sparkler that slowly transitions to a new color and then back (optionally not back)
+  @staticmethod
+  def Flow(display, colorfunc, steps=None, frac=None, reverse=True):
+    options = display.options
+    return Sparkler(display, colorfunc, steps=(steps or options.flowsteps), fraction=(frac or options.flowfrac), reverse=reverse)
+
+  # twinkle is a factory for a Sparkler that randomly flashes quickly to white and back
+  @staticmethod
+  def Twinkle(display, colorfunc, steps=None, frac=None):
+    options = display.options
+    return Sparkler(display, colorfunc, steps=(steps or options.sparksteps), fraction=(frac or options.sparkfrac), reverse=True)
+
+
   # display is the overall PixelDisplay
   # colorfunc returns the color to change to
   # reverse indicates to go back
