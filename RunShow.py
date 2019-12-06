@@ -42,7 +42,7 @@ time.sleep(5)
 
 # run program in loop
 while True:
-  os.system('python Show.py')
+  os.system('python GrinchShow.py')
   print "SHOW LOOPING!!!!!"
   time.sleep(1)
 
