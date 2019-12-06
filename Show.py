@@ -7,12 +7,12 @@ from PixelDisplay import PixelDisplay
 from PixelPatterns import PixelPatterns
 from Relays import Relays
 from Sparkler import Sparkler
-from GrinchShow import *
 import argparse
 import array
 import gc
 import random
 import time
+import enum
 
 TICK_INTERVAL_MS = 50  # in ms
 TICK_INTERVAL_S = TICK_INTERVAL_MS/1000.0
@@ -25,6 +25,33 @@ GPIO_GRINCH = 2
 
 class Show(object):
 
+  # objects in show.  Ideally we get this via config but show variants use
+  # the same objects (and pixels which are currently set up in PixelDisplay)
+  class Relays(enum.IntEnum):
+    # first 8 slots are SSR max 2A for lights
+    OLAF = 0
+    LASER_PROJ = 1
+    REINDEER = 2
+    SNOWMAN = 3
+    GRINCH_SLEIGH = 4
+    GRINCH = 5
+
+    # next 4 are leaf relay max 10A for fans
+    OLAF_FAN = 8
+    GRINCH_FAN = 9
+    GRINCH_SLEIGH_FAN = 10
+
+    # last is local relay for 12V PS (for pixels)
+    # relay is NC so we don't touch it during the show, used by show drivers 
+    POWER = 12
+
+  # Commands common (not involving animation)
+  class Commands(enum.Enum):
+    ON = 0
+    OFF = 1
+    PIXELS_ON = 3
+    RESTART = 5
+
   def __init__(self, options):
     self._options = options
     PixelPatterns.SetOptions(options)
@@ -34,15 +61,10 @@ class Show(object):
     self._loop_count = 0
     self._relays = None
     self._display = None
-    self._sliding = None
     self._target_time = time.time()
 
   @staticmethod
   def SetArgs(parser):
-    parser.add_argument('--ondelay', type=int, default=3, help="delay between grinch sleigh appear and lights on")
-    parser.add_argument('--grinchoffdelay', type=int, default=2, help="delay between grinch sleigh appear and lights turning off")
-    parser.add_argument('--startslide', type=int, default=35, help="start grinch slide at seconds")
-    parser.add_argument('--darktime', type=int, default=6, help="time to remain dark after slide before reset")
     parser.add_argument('--pattern', type=int, help="run only pattern index i")
     parser.add_argument('--nosleigh', action='store_true', help="no grinch sleigh for high winds")
 
@@ -50,36 +72,15 @@ class Show(object):
   def options(self):
     return self._options
 
-  def Start(self):
+  # begin show
+  # subclass must override, call this, and minimally set up restart timer
+  def ReStart(self):
     print "START"
     self._loop_count = 0
-    self._sliding = None
     self._display = PixelDisplay(self._wrapper, self._options)
     self._relays = Relays(self._wrapper, self._options)
     self._sparkler = None
 
-    self.LoadTimings(GrinchShowStart(self._options))
-                   
-  def StartGrinch(self):
-    print "GRINCH"
-    self.LoadTimings(GrinchShowAppear(self._options))
-    
-  def EndGrinch(self):
-    print "GRINCHGOING"
-    self.LoadTimings(GrinchFinished(self._options))
-   
-  def StartSlide(self):
-    print "start slide"
-    gc.collect()
-    self._sliding = self._display.SlideLeft()
-    self._finished = False
-
-  def FinishSlide(self):
-    print "finish slide"
-    gc.collect()
-    self._sliding = self._display.SlideLeft(True)
-    self._finished = True
-    
   def NewDisplay(self):
     gc.collect()
     if (self._options.pattern is not None):
@@ -89,29 +90,32 @@ class Show(object):
       self._showcount += 1
     self._sparkler = pattern(self._display)
 
+  def LoadTiming(self, e):
+    ms = int(e[0] * 1000)
+    if (self._options.nosleigh and len(e) == 3):
+      if (e[2] == Show.Relays.GRINCH_SLEIGH_FAN): e = (e[0], e[1], Show.Relays.GRINCH_FAN)
+      elif (e[2] == Show.Relays.GRINCH_SLEIGH): e = (e[0], e[1], Show.Relays.GRINCH)
+    # switch... oh yeah
+    if (e[1] == Show.Commands.ON):
+      self._wrapper.AddEvent(ms, lambda x=e[2]: self._relays.on(x))
+    elif (e[1] == Show.Commands.OFF):
+      self._wrapper.AddEvent(ms, lambda x=e[2]: self._relays.off(x))
+    elif (e[1] == Show.Commands.PIXELS_ON):
+      self._wrapper.AddEvent(ms, lambda: self.NewDisplay())
+    elif (e[1] == Show.Commands.RESTART):
+      self._wrapper.AddEvent(ms, lambda: self.ReStart())
+    else:
+      raise NotImplementedError(e)
+
   def LoadTimings(self, events):
     #print "adding events", events
     for e in events:
-      ms = int(e[0] * 1000)
-      if (self._options.nosleigh and len(e) == 3):
-        if (e[2] == Relay.GRINCH_SLEIGH_FAN): e = (e[0], e[1], Relay.GRINCH_FAN)
-        elif (e[2] == Relay.GRINCH_SLEIGH): e = (e[0], e[1], Relay.GRINCH)
-      # switch... oh yeah
-      if (e[1] == Commands.ON):
-        self._wrapper.AddEvent(ms, lambda x=e[2]: self._relays.on(x))
-      elif (e[1] == Commands.OFF):
-        self._wrapper.AddEvent(ms, lambda x=e[2]: self._relays.off(x))
-      elif (e[1] == Commands.START_GRINCH):
-        self._wrapper.AddEvent(ms, lambda: self.StartGrinch())
-      elif (e[1] == Commands.PIXELS_ON):
-        self._wrapper.AddEvent(ms, lambda: self.NewDisplay())
-      elif (e[1] == Commands.FINISH_SLIDE):
-        self._wrapper.AddEvent(ms, lambda: self.FinishSlide())
-      elif (e[1] == Commands.RESTART):
-        self._wrapper.AddEvent(ms, lambda: self.Start())
-      elif (e[1] == Commands.START_SLIDE):
-        self._wrapper.AddEvent(ms, lambda: self.StartSlide())
+      self.LoadTiming(e)
         
+  # stub subclasses can implement if they have their own animation
+  def _animateNextFrame(self):
+    pass
+
   # send frame precomputed last call, then compute frame and schedule next call
   def SendFrame(self):
     # send (if pending), do first thing to time as precisely as we can
@@ -120,15 +124,7 @@ class Show(object):
     if (self._loop_count % (TICK_PER_SEC*10) == 0):
       print "loop: ", self._loop_count // TICK_PER_SEC
     
-    if (self._sliding is not None):
-      if (not self._sliding.next()):
-        self._sliding = None
-        if (not self._finished):
-          # schedule final scene after first slide finishes
-          self.EndGrinch()
-        else:
-          # after final slideoff and disappear, stop sparkling
-          self._sparkler = None
+    self._animateNextFrame()
 
     if (self._sparkler is not None):
       self._sparkler.Sparkle()
@@ -148,18 +144,22 @@ class Show(object):
     self._loop_count += 1
 
   def Run(self):
-    self.Start()
+    self.ReStart()
     self.SendFrame()
     self._wrapper.Run()
+
+  @staticmethod
+  def setupArgs(parser):
+    Show.SetArgs(parser)
+    PixelDisplay.SetArgs(parser)
+    Relays.SetArgs(parser)
+    PixelPatterns.SetArgs(parser)
+    Sparkler.SetArgs(parser)
 
     
 def main():
   parser = argparse.ArgumentParser()
-  Show.SetArgs(parser)
-  PixelDisplay.SetArgs(parser)
-  Relays.SetArgs(parser)
-  PixelPatterns.SetArgs(parser)
-  Sparkler.SetArgs(parser)
+
   options = parser.parse_args()
   print "args are" , options
   show = Show(options)
