@@ -2,6 +2,7 @@ import enum
 import argparse
 import gc
 
+import Options
 from Show import Show
 
 class GrinchShow(Show):
@@ -141,12 +142,9 @@ class GrinchShow(Show):
     
 def main():
   parser = argparse.ArgumentParser()
-  Show.setupArgs(parser)
   GrinchShow.SetArgs(parser)
-
-  options = parser.parse_args()
-  print "args are" , options
-  show = GrinchShow(options)
+  Options.SetGlobalArgs(parser)
+  show = GrinchShow(Options.opts)
   show.Run()
 
 

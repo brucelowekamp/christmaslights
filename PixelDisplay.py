@@ -1,6 +1,5 @@
 import array
 import random
-from utils import *
 
 class PixelDisplay(object):
 
@@ -55,6 +54,12 @@ class PixelDisplay(object):
         self._draw = True
         yield True
 
+    @staticmethod
+    def DmxSent(state):
+      if not state.Succeeded():
+        print ("Error: ", state.message)
+        raise
+
     def SendDmx(self):
       if (self._draw):
         u = self._universe
@@ -62,7 +67,7 @@ class PixelDisplay(object):
         bases = xrange(0+self._slid, self._channels+self._slid, self._maxchannels)
         for b in bases:
           data = self._pixels[b: min(b+self._maxchannels, self._channels+self._slid)]
-          self._wrapper.Client().SendDmx(u, data, DmxSent)
+          self._wrapper.Client().SendDmx(u, data, PixelDisplay.Strand.DmxSent)
           u += 1
       self._draw = False
     
