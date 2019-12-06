@@ -147,24 +147,4 @@ class Show(object):
     self.ReStart()
     self.SendFrame()
     self._wrapper.Run()
-
-  @staticmethod
-  def setupArgs(parser):
-    Show.SetArgs(parser)
-    PixelDisplay.SetArgs(parser)
-    Relays.SetArgs(parser)
-    PixelPatterns.SetArgs(parser)
-    Sparkler.SetArgs(parser)
-
     
-def main():
-  parser = argparse.ArgumentParser()
-
-  options = parser.parse_args()
-  print "args are" , options
-  show = Show(options)
-  show.Run()
-
-
-if __name__ == '__main__':
-  main()

@@ -1,5 +1,4 @@
 import array
-from utils import *
 
 class Relays(object):
   def __init__(self, wrapper, options):
@@ -27,7 +26,13 @@ class Relays(object):
     self._dmx[channel] = 0
     self._draw = True
 
+  @staticmethod
+  def DmxSent(state):
+    if not state.Succeeded():
+      print ("Error: ", state.message)
+      raise
 
   def SendDmx(self):
-    if(self._use_relays and self._draw): self._wrapper.Client().SendDmx(self._universe, self._dmx, DmxSent)
+    if(self._use_relays and self._draw): 
+      self._wrapper.Client().SendDmx(self._universe, self._dmx, Relays.DmxSent)
     self._draw = False
