@@ -3,10 +3,10 @@ from wl_to_rgb import wavelength_to_rgb
 import colorsys
 from Sparkler import Sparkler
 import random
+from Options import Options
+
 
 class PixelPatterns(object):
-  fade_min = 6
-  options = None
   Patterns = None
   
   @staticmethod
@@ -14,10 +14,6 @@ class PixelPatterns(object):
     parser.add_argument('--fademin', type=int, default=6, help="min side of exp in rgfade")
     parser.add_argument('--fadesets', type=int, default=10, help="number of fadesets per strand in rgfade")
     parser.add_argument('--rgsize', type=int, default=5, help="size of red/green blocks in RG pattern")
-
-  @staticmethod
-  def SetOptions(options):
-    PixelPatterns.options = options
 
   @staticmethod
   def WhiteColor():
@@ -28,7 +24,7 @@ class PixelPatterns(object):
     print ("RedGreen pattern")
     i = 0
     for p in display:
-      red = (i//PixelPatterns.options.rgsize)%2 == 0
+      red = (i//Options.rgsize)%2 == 0
       display.ColorSet(p, 255 if red else 0, 0 if red else 255, 0)
       i+=1
     return Sparkler.Twinkle(display, PixelPatterns.WhiteColor)
@@ -36,8 +32,8 @@ class PixelPatterns(object):
   @staticmethod
   def RGFade(display):
     print ("RGFade pattern")
-    minf = PixelPatterns.options.fademin
-    fadesets = PixelPatterns.options.fadesets
+    minf = Options.fademin
+    fadesets = Options.fadesets
     
     for s in display.strands():
       # break into fadesets segments and spread remainder out over first segments

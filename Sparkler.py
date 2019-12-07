@@ -1,4 +1,5 @@
 import random
+from Options import Options
 
 # sparkler is used to twinkle (flash white), to flow (slowly change to a color and back)
 # and to permanently change to a new color
@@ -13,14 +14,12 @@ class Sparkler(object):
   # Flow is a factory for a Sparkler that slowly transitions to a new color and then back (optionally not back)
   @staticmethod
   def Flow(display, colorfunc, steps=None, frac=None, reverse=True):
-    options = display.options
-    return Sparkler(display, colorfunc, steps=(steps or options.flowsteps), fraction=(frac or options.flowfrac), reverse=reverse)
+    return Sparkler(display, colorfunc, steps=(steps or Options.flowsteps), fraction=(frac or Options.flowfrac), reverse=reverse)
 
   # twinkle is a factory for a Sparkler that randomly flashes quickly to white and back
   @staticmethod
   def Twinkle(display, colorfunc, steps=None, frac=None):
-    options = display.options
-    return Sparkler(display, colorfunc, steps=(steps or options.sparksteps), fraction=(frac or options.sparkfrac), reverse=True)
+    return Sparkler(display, colorfunc, steps=(steps or Options.sparksteps), fraction=(frac or Options.sparkfrac), reverse=True)
 
 
   # display is the overall PixelDisplay
@@ -30,7 +29,6 @@ class Sparkler(object):
   # fraction is fraction of pixels in display to be changing at any one time
   def __init__(self, display, colorfunc, steps=4, fraction=0.02, reverse =  True):
     self._display = display
-    #self._options = options
     self._Colorfunc = colorfunc
     self._Steps = steps
     self._reverse = reverse

@@ -1,12 +1,13 @@
 import array
+from Options import Options
 
 class Relays(object):
-  def __init__(self, wrapper, options):
+  def __init__(self, wrapper):
     self._dmx = array.array('B', [0] * 13)
     self._draw = False
     self._universe = 10
     self._wrapper = wrapper
-    self._use_relays = options.relays
+    self._use_relays = Options.relays
 
   @staticmethod
   def SetArgs(parser):

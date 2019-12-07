@@ -1,5 +1,6 @@
 import array
 import random
+from Options import Options
 
 class PixelDisplay(object):
 
@@ -9,7 +10,7 @@ class PixelDisplay(object):
     # universe is starting universe
     # maxchannels is max channels per universe, universe increments by one past
     # buffer created is twice required length so slide is implemented by shifting window not by moving bits
-    def __init__(self, wrapper, universe, length, prefix, hold, options, maxchannels=510):
+    def __init__(self, wrapper, universe, length, prefix, hold, maxchannels=510):
       self._universe = universe
       self._maxchannels = maxchannels 
       self._channels = length * 3
@@ -20,7 +21,6 @@ class PixelDisplay(object):
       self._drawable_length = length - prefix
       self._draw = True
       self._wrapper = wrapper
-      self._options = options
 
     _zero_pixel = array.array('B', [0, 0, 0])
 
@@ -71,16 +71,15 @@ class PixelDisplay(object):
           u += 1
       self._draw = False
     
-  def __init__(self, wrapper, options):
+  def __init__(self, wrapper):
     self._draw = False
     self._wrapper = wrapper
     self._strands = []
-    self._options = options
 
-    self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 48, 26, options))
-    self._strands.append(PixelDisplay.Strand(wrapper, 2, 250, 18, 0, options))
-    #self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 0, 0, options))
-    #self._strands.append(PixelDisplay.Strand(wrapper, 2, 250, 0, 0, options))
+    self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 48, 26))
+    self._strands.append(PixelDisplay.Strand(wrapper, 2, 250, 18, 0))
+    #self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 0, 0))
+    #self._strands.append(PixelDisplay.Strand(wrapper, 2, 250, 0, 0))
 
     self._length = sum(map(lambda s: s.length, self._strands))
     self._map = []
@@ -99,10 +98,6 @@ class PixelDisplay(object):
   @property
   def num_strands(self):
     return len(self._strands)
-
-  @property
-  def options(self):
-    return self._options
 
   # iterates across the map.  map tuples can be treated transparently and passed to ColorSet
   def __iter__(self):
