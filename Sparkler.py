@@ -16,9 +16,13 @@ class Sparkler(object):
   def Flow(display, colorfunc, steps=None, frac=None, reverse=True):
     return Sparkler(display, colorfunc, steps=(steps or Options.flowsteps), fraction=(frac or Options.flowfrac), reverse=reverse)
 
+  @staticmethod
+  def WhiteColor():
+    return (255, 255, 255)
+
   # twinkle is a factory for a Sparkler that randomly flashes quickly to white and back
   @staticmethod
-  def Twinkle(display, colorfunc, steps=None, frac=None):
+  def Twinkle(display, colorfunc=WhiteColor, steps=None, frac=None):
     return Sparkler(display, colorfunc, steps=(steps or Options.sparksteps), fraction=(frac or Options.sparkfrac), reverse=True)
 
 

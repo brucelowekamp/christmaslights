@@ -16,10 +16,6 @@ class PixelPatterns(object):
     parser.add_argument('--rgsize', type=int, default=5, help="size of red/green blocks in RG pattern")
 
   @staticmethod
-  def WhiteColor():
-    return (255, 255, 255)
-    
-  @staticmethod
   def RedGreen(display):
     print ("RedGreen pattern")
     i = 0
@@ -27,7 +23,7 @@ class PixelPatterns(object):
       red = (i//Options.rgsize)%2 == 0
       display.ColorSet(p, 255 if red else 0, 0 if red else 255, 0)
       i+=1
-    return Sparkler.Twinkle(display, PixelPatterns.WhiteColor)
+    return Sparkler.Twinkle(display)
   
   @staticmethod
   def RGFade(display):
@@ -105,7 +101,7 @@ class PixelPatterns(object):
         x = PixelPatterns.FracToRainbow(x)
         (r, g, b) = wavelength_to_rgb(x*370+380)
         s.ColorSet(p, r, g, b)
-    return Sparkler.Twinkle(display, PixelPatterns.WhiteColor)
+    return Sparkler.Twinkle(display)
 
   # heather wants a strand of red, green, blue, white, and purple
   HeathersColors = [
@@ -134,4 +130,30 @@ class PixelPatterns(object):
       display.ColorSet(p, 255, 0, 0)
     return Sparkler.Flow(display, lambda: (0, 255, 0))
 
-PixelPatterns.Patterns = [PixelPatterns.RedGreen, PixelPatterns.HeatherStrand, PixelPatterns.WhiteFlow, PixelPatterns.Rainbow, PixelPatterns.RGFlow]
+
+  @staticmethod
+  def RandomFlow(display):
+    print ("RandomFlow")
+    a = PixelPatterns.PickHeatherColor()
+    while True:
+      b = PixelPatterns.PickHeatherColor()
+      if ( a != b ): break
+    for p in display:
+      display.ColorSet(p, a[0], a[1], a[2])
+
+    return Sparkler.Flow(display, lambda: (b[0], b[1], b[2]))
+
+  @staticmethod
+  def RandomStrands(display):
+    print ("RandomStrands")
+    colors = list(PixelPatterns.HeathersColors)
+    random.shuffle(colors)
+    for s in display.strands():
+      a = colors.pop()
+      for p in s:
+        s.ColorSet(p, a[0], a[1], a[2])
+    a = colors.pop()
+    return Sparkler.Flow(display, lambda: a)
+
+
+PixelPatterns.Patterns = [PixelPatterns.RandomStrands, PixelPatterns.RandomFlow, PixelPatterns.HeatherStrand, PixelPatterns.RedGreen, PixelPatterns.WhiteFlow, PixelPatterns.Rainbow, PixelPatterns.RGFlow]
