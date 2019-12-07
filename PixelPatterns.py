@@ -134,4 +134,25 @@ class PixelPatterns(object):
       display.ColorSet(p, 255, 0, 0)
     return Sparkler.Flow(display, lambda: (0, 255, 0))
 
-PixelPatterns.Patterns = [PixelPatterns.RedGreen, PixelPatterns.HeatherStrand, PixelPatterns.WhiteFlow, PixelPatterns.Rainbow, PixelPatterns.RGFlow]
+
+  @staticmethod
+  def RandomFlow(display):
+    print ("RandomFlow")
+    a = PixelPatterns.PickHeatherColor()
+    b = PixelPatterns.PickHeatherColor()
+    for p in display:
+      display.ColorSet(p, a[0], a[1], a[2])
+
+    return Sparkler.Flow(display, lambda: (b[0], b[1], b[2]))
+
+  @staticmethod
+  def RandomStrands(display):
+    print ("RandomStrands")
+    for s in display.strands():
+      a = PixelPatterns.PickHeatherColor()
+      for p in s:
+        s.ColorSet(p, a[0], a[1], a[2])
+    return Sparkler.Twinkle(display, PixelPatterns.WhiteColor)
+
+
+PixelPatterns.Patterns = [PixelPatterns.RandomStrands, PixelPatterns.RandomFlow, PixelPatterns.HeatherStrand, PixelPatterns.WhiteFlow, PixelPatterns.Rainbow, PixelPatterns.RGFlow]
