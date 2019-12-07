@@ -7,6 +7,7 @@ from PixelDisplay import PixelDisplay
 from PixelPatterns import PixelPatterns
 from Relays import Relays
 from Sparkler import Sparkler
+from Options import Options
 import argparse
 import array
 import gc
@@ -52,9 +53,7 @@ class Show(object):
     PIXELS_ON = 3
     RESTART = 5
 
-  def __init__(self, options):
-    self._options = options
-    PixelPatterns.SetOptions(options)
+  def __init__(self):
     self._wrapper = ClientWrapper()
     self._showcount = 0
     
@@ -68,23 +67,19 @@ class Show(object):
     parser.add_argument('--pattern', type=int, help="run only pattern index i")
     parser.add_argument('--nosleigh', action='store_true', help="no grinch sleigh for high winds")
 
-  @property
-  def options(self):
-    return self._options
-
   # begin show
   # subclass must override, call this, and minimally set up restart timer
   def ReStart(self):
     print "START"
     self._loop_count = 0
-    self._display = PixelDisplay(self._wrapper, self._options)
-    self._relays = Relays(self._wrapper, self._options)
+    self._display = PixelDisplay(self._wrapper)
+    self._relays = Relays(self._wrapper)
     self._sparkler = None
 
   def NewDisplay(self):
     gc.collect()
-    if (self._options.pattern is not None):
-      pattern = PixelPatterns.Patterns[self._options.pattern]
+    if (Options.pattern is not None):
+      pattern = PixelPatterns.Patterns[Options.pattern]
     else:
       pattern = PixelPatterns.Patterns[self._showcount % len(PixelPatterns.Patterns)]
       self._showcount += 1
@@ -92,7 +87,7 @@ class Show(object):
 
   def LoadTiming(self, e):
     ms = int(e[0] * 1000)
-    if (self._options.nosleigh and len(e) == 3):
+    if (Options.nosleigh and len(e) == 3):
       if (e[2] == Show.Relays.GRINCH_SLEIGH_FAN): e = (e[0], e[1], Show.Relays.GRINCH_FAN)
       elif (e[2] == Show.Relays.GRINCH_SLEIGH): e = (e[0], e[1], Show.Relays.GRINCH)
     # switch... oh yeah

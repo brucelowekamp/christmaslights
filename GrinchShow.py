@@ -2,12 +2,12 @@ import enum
 import argparse
 import gc
 
-import Options
+from Options import Options
 from Show import Show
 
 class GrinchShow(Show):
-  def __init__(self, options):
-    super(GrinchShow, self).__init__(options)
+  def __init__(self):
+    super(GrinchShow, self).__init__()
     self._sliding = None
 
 
@@ -44,7 +44,7 @@ class GrinchShow(Show):
     super(GrinchShow, self).ReStart()
     self._sliding = None
 
-    on = self._options.ondelay
+    on = Options.ondelay
     self.LoadTimings( [
       #starting state
       (0, Show.Commands.ON, Show.Relays.OLAF_FAN),
@@ -65,13 +65,13 @@ class GrinchShow(Show):
       (on+5, Show.Commands.PIXELS_ON),
 
       (on+7, Show.Commands.OFF, Show.Relays.GRINCH_SLEIGH),
-      (on+6+self._options.startslide, GrinchShow.GrinchCommands.START_GRINCH),
+      (on+6+Options.startslide, GrinchShow.GrinchCommands.START_GRINCH),
     ])
 
 # when grinch appears then sequence until all off
   def StartGrinch(self):
     print "GRINCH"
-    off = self._options.grinchoffdelay
+    off = Options.grinchoffdelay
     s = off + 6 + 1
     t = s + 1.5
     self.LoadTimings( [
@@ -115,7 +115,7 @@ class GrinchShow(Show):
     self._finished = True
     
   def EndGrinch(self):
-    s = self._options.grinchoffdelay
+    s = Options.grinchoffdelay
     self.LoadTimings( [
       (s+0, Show.Commands.OFF, Show.Relays.GRINCH),
       (s+0.3, Show.Commands.ON, Show.Relays.GRINCH),
@@ -123,7 +123,7 @@ class GrinchShow(Show):
       (s+1, GrinchShow.GrinchCommands.FINISH_SLIDE),
       (s+1.4, Show.Commands.ON, Show.Relays.GRINCH),
       (s+1.9, Show.Commands.OFF, Show.Relays.GRINCH),
-      (s+3+self._options.darktime, Show.Commands.RESTART)
+      (s+3+Options.darktime, Show.Commands.RESTART)
     ])
 
     
@@ -141,10 +141,9 @@ class GrinchShow(Show):
 
     
 def main():
-  parser = argparse.ArgumentParser()
-  GrinchShow.SetArgs(parser)
-  Options.SetGlobalArgs(parser)
-  show = GrinchShow(Options.opts)
+  GrinchShow.SetArgs(Options.parser)
+  Options.ParseArgs()
+  show = GrinchShow()
   show.Run()
 
 

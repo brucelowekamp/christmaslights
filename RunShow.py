@@ -3,21 +3,19 @@
 from ola.ClientWrapper import ClientWrapper
 from Relays import Relays
 from GrinchShow import *
-
+from Options import Options
 import os
 import argparse
 import time
 
-parser = argparse.ArgumentParser()
-Relays.SetArgs(parser)
-options = parser.parse_args()
+Options.ParseArgs()
 
 # kill any currently running shows
 os.system('killall --older-than 1m python')
 
 
 wrapper = ClientWrapper()
-relays = Relays(wrapper, options)
+relays = Relays(wrapper)
 
 # turn off 12v (on NC so sense is reversed)
 # (conincidentally turns off everything else, too)
@@ -33,7 +31,7 @@ os.system('sudo /etc/init.d/olad restart')
 time.sleep(5)
 
 wrapper = ClientWrapper()
-relays = Relays(wrapper, options)
+relays = Relays(wrapper)
 
 relays.off(Relay.POWER)
 relays.SendDmx()
