@@ -22,6 +22,7 @@
 # 
 # m h  dom mon dow   command
 
-00 17 * * * cd christmaslights && python RunShow.py
+30 16 * * * cd christmaslights && python RunSimpleShow.py
+30 17 * * * cd christmaslights && python RunGrinchShow.py
 00 23 * * * cd christmaslights && python KillShow.py
 
