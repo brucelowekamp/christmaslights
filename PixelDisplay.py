@@ -4,44 +4,70 @@ from Options import Options
 
 class PixelDisplay(object):
 
+  # to deal with strand with unused segments mid-strand, create a class that maps
+  # from drawable pixel i to strand pixel j
+  class StrandMap(object):
+    def __init__(self, length, prefix):
+      self._length = length
+      self._prefix = prefix
+      self._map = [] # simply holds sequence of valid j's
+
+      self._calc_map()
+      
+    # build the map for this strand, overridden by more complex implementations
+    def _calc_map(self):
+      self._map = range(self._prefix, self._length)
+    
+    @property
+    def strand_len(self):
+      return self._length
+
+    # drawable length is length of map of j pixels
+    def __len__(self):
+      return len(self._map)
+
+    # return iteration of j pixels
+    def __iter__(self):
+      return iter(xrange(self._drawable_length))
+
+    # actual map
+    def __getitem__(self, i):
+      return self._map[i]
+
   class Strand(object):
-    # create strand of length pixels with prefix pixels not used (except for slide)
+    # create strand of strandmap pixels for drawing (except for slide)
     # hold pixels of prefix remain until slide restarts
-    # universe is starting universe
+    # universe is starting universe (these strands all start at channel 1)
     # maxchannels is max channels per universe, universe increments by one past
     # buffer created is twice required length so slide is implemented by shifting window not by moving bits
-    def __init__(self, wrapper, universe, length, prefix, hold, maxchannels=510):
+    def __init__(self, wrapper, universe, map, hold, maxchannels=510):
       self._universe = universe
       self._maxchannels = maxchannels 
-      self._channels = length * 3
+      self._channels = map.strand_len * 3
       self._pixels = array.array('B', [0] * self._channels * 2)
-      self._prefix = prefix
+      self._map = map
       self._hold = hold
       self._slid = 0
-      self._drawable_length = length - prefix
       self._draw = True
       self._wrapper = wrapper
 
     _zero_pixel = array.array('B', [0, 0, 0])
 
-    # probably more pythonic to implement __len__
-    @property
-    def length(self):
-      return self._drawable_length
+    def __len__(self):
+      return len(self._map)
 
     # maybe it would be better to have pixels as a class, but no
+    # do not expose the map aspect to consumers
     def __iter__(self):
-      return iter(xrange(self._drawable_length))
+      return iter(xrange(len(self._map)))
 
     #return [R, G, B] of pixel
-    def ColorGet(self, pixel):
-      assert pixel < self._drawable_length
-      pixel += self._prefix
+    def ColorGet(self, ipixel):
+      pixel = self._map[ipixel]
       return [self._pixels[pixel*3+0], self._pixels[pixel*3+1],self._pixels[pixel*3+2]]
 
-    def ColorSet(self, pixel, red, green, blue):
-      assert pixel < self._drawable_length
-      pixel += self._prefix
+    def ColorSet(self, ipixel, red, green, blue):
+      pixel = self._map[ipixel]
       self._pixels[pixel*3+0] = red
       self._pixels[pixel*3+1] = green
       self._pixels[pixel*3+2] = blue
@@ -76,12 +102,12 @@ class PixelDisplay(object):
     self._wrapper = wrapper
     self._strands = []
 
-    self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 48, 26))
-    self._strands.append(PixelDisplay.Strand(wrapper, 2, 250, 18, 0))
-    #self._strands.append(PixelDisplay.Strand(wrapper, 1, 150, 0, 0))
-    #self._strands.append(PixelDisplay.Strand(wrapper, 2, 250, 0, 0))
+    self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26))
+    self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(250, 18), 0))
+    #self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 0), 0))
+    #self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(250, 0), 0))
 
-    self._length = sum(map(lambda s: s.length, self._strands))
+    self._length = sum(map(lambda s: len(s), self._strands))
     self._map = []
     for s in self._strands:
       for p in s:
