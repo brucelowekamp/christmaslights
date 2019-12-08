@@ -93,7 +93,7 @@ class PixelPatterns(object):
   def Rainbow(display):
     print ("Rainbow")
     for s in display.strands():
-      l = s.length
+      l = len(s)
       for p in s:
         #(r, g, b) = colorsys.hsv_to_rgb((p*1.0)/l, 1, 1)
         #display.ColorSetStrand(s, p, int(r*255), int(g*255), int(b*255))
