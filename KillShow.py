@@ -2,7 +2,7 @@
 
 from ola.ClientWrapper import ClientWrapper
 from Relays import Relays
-from GrinchShow import *
+from Show import Show
 from Options import Options
 
 import os
@@ -24,7 +24,7 @@ relays = Relays(wrapper)
 
 # turn off 12v (on NC so sense is reversed)
 # (conincidentally turns off everything else, too)
-relays.on(Relay.POWER)
+relays.on(Show.Relays.POWER)
 relays.SendDmx()
 
 time.sleep(5)
