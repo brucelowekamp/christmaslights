@@ -4,6 +4,9 @@ from Options import Options
 
 class PixelDisplay(object):
 
+  MaxBright = 0.50 # fraction of max pixel brightness to run at.  Not configurable
+                   # as it's something of a safety issue: fuses will blow if set to 1
+  
   # to deal with strand with unused segments mid-strand, create a class that maps
   # from drawable pixel i to strand pixel j
   class StrandMap(object):
@@ -93,6 +96,10 @@ class PixelDisplay(object):
         bases = xrange(0+self._slid, self._channels+self._slid, self._maxchannels)
         for b in bases:
           data = self._pixels[b: min(b+self._maxchannels, self._channels+self._slid)]
+          # note: this is slow and non-pythonic, but would need to switch to numpy
+          # array for anything reasonable to not return a list instead of array
+          for i in xrange(len(data)):
+            data[i] = int(data[i]*PixelDisplay.MaxBright)
           self._wrapper.Client().SendDmx(u, data, PixelDisplay.Strand.DmxSent)
           u += 1
       self._draw = False

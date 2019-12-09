@@ -30,7 +30,7 @@ relays.SendDmx()
 time.sleep(8)
 
 length = 50
-pixels = array.array('B', [255] * length*3)
+pixels = array.array('B', [int(255*1)] * length*3)
 
 wrapper.Client().SendDmx(2, pixels, DmxSent)
 print "white sent 50 pixels to univ 2"
