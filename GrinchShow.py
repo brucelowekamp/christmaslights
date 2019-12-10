@@ -40,6 +40,36 @@ class GrinchShow(Show):
     else:
       super(GrinchShow, self).LoadTiming(e)
 
+  @staticmethod
+  # sequence of events that flashes on a relay r starting at time t
+  def FlashOn(t, r):
+    return [
+      (t, Show.Commands.ON, r),
+      (t+0.1, Show.Commands.OFF, r),
+      (t+0.3, Show.Commands.ON, r),
+      (t+0.4, Show.Commands.OFF, r),
+      (t+0.55, Show.Commands.ON, r),
+      (t+0.65, Show.Commands.OFF, r),
+      (t+0.75, Show.Commands.ON, r),
+      (t+0.85, Show.Commands.OFF, r),
+      (t+0.95, Show.Commands.ON, r)
+    ]
+
+  @staticmethod
+  # sequence of events that flashes on a relay r starting at time t
+  def FlashOff(t, r):
+    return [
+      (t, Show.Commands.OFF, r),
+      (t+0.1, Show.Commands.ON, r),
+      (t+0.3, Show.Commands.OFF, r),
+      (t+0.4, Show.Commands.ON, r),
+      (t+0.55, Show.Commands.OFF, r),
+      (t+0.65, Show.Commands.ON, r),
+      (t+0.75, Show.Commands.OFF, r),
+      (t+0.85, Show.Commands.ON, r),
+      (t+0.95, Show.Commands.OFF, r)
+    ]
+
   def ReStart(self):
     super(GrinchShow, self).ReStart()
     self._sliding = None
@@ -58,46 +88,34 @@ class GrinchShow(Show):
       (0, Show.Commands.OFF, Show.Relays.GRINCH),
 
       # now start to turn things on
-      (on, Show.Commands.ON, Show.Relays.OLAF),
-      (on+1, Show.Commands.ON, Show.Relays.REINDEER),
-      (on+2, Show.Commands.ON, Show.Relays.SNOWMAN),
+      GrinchShow.FlashOn(on, Show.Relays.OLAF),
+      GrinchShow.FlashOn(on+1, Show.Relays.REINDEER),
+      GrinchShow.FlashOn(on+2, Show.Relays.SNOWMAN),
       (on+3, Show.Commands.ON, Show.Relays.LASER_PROJ),
       (on+5, Show.Commands.PIXELS_ON),
 
-      (on+7, Show.Commands.OFF, Show.Relays.GRINCH_SLEIGH),
+      GrinchShow.FlashOff(on+7, Show.Relays.GRINCH_SLEIGH),
       (on+6+Options.startslide, GrinchShow.GrinchCommands.START_GRINCH),
     ])
 
-# when grinch appears then sequence until all off
+  # when grinch appears then sequence until all off
   def StartGrinch(self):
     print "GRINCH"
     off = Options.grinchoffdelay
     s = off + 6 + 1
     t = s + 1.5
     self.LoadTimings( [
-      (0, Show.Commands.ON, Show.Relays.GRINCH_SLEIGH),
-      (0.1, Show.Commands.OFF, Show.Relays.GRINCH_SLEIGH),
-      (0.3, Show.Commands.ON, Show.Relays.GRINCH_SLEIGH),
-      (0.6, Show.Commands.OFF, Show.Relays.GRINCH_SLEIGH),
-      (1.0, Show.Commands.ON, Show.Relays.GRINCH_SLEIGH),
+      GrinchShow.FlashOn(0, Show.Relays.GRINCH_SLEIGH),
 
-      (off, Show.Commands.OFF, Show.Relays.OLAF),
-      (off+2, Show.Commands.OFF, Show.Relays.REINDEER),
-      (off+4, Show.Commands.OFF, Show.Relays.SNOWMAN),
+      GrinchShow.FlashOff(off, Show.Relays.OLAF),
+      GrinchShow.FlashOff(off+2, Show.Relays.REINDEER),
+      GrinchShow.FlashOff(off+4, Show.Relays.SNOWMAN),
       (off+6, Show.Commands.OFF, Show.Relays.LASER_PROJ),
 
-      (s+0, Show.Commands.OFF, Show.Relays.GRINCH_SLEIGH),
-      (s+0.1, Show.Commands.ON, Show.Relays.GRINCH_SLEIGH),
-      (s+.4, Show.Commands.OFF, Show.Relays.GRINCH_SLEIGH),
-      (s+.8, Show.Commands.ON, Show.Relays.GRINCH_SLEIGH),
-      (s+1.1, Show.Commands.OFF, Show.Relays.GRINCH_SLEIGH),
+      GrinchShow.FlashOff(s, Show.Relays.GRINCH_SLEIGH),
 
-      (t+0, Show.Commands.ON, Show.Relays.GRINCH),
-      (t+0.1, Show.Commands.OFF, Show.Relays.GRINCH),
-      (t+0.3, Show.Commands.ON, Show.Relays.GRINCH),
-      (t+0.4, Show.Commands.OFF, Show.Relays.GRINCH),
-      (t+0.8, Show.Commands.ON, Show.Relays.GRINCH),
-    
+      GrinchShow.FlashOn(t, Show.Relays.GRINCH),
+
       (t+1.5, GrinchShow.GrinchCommands.START_SLIDE)
     ])
 
@@ -118,12 +136,12 @@ class GrinchShow(Show):
     s = Options.grinchoffdelay
     self.LoadTimings( [
       (s+0, Show.Commands.OFF, Show.Relays.GRINCH),
-      (s+0.3, Show.Commands.ON, Show.Relays.GRINCH),
-      (s+1, Show.Commands.OFF, Show.Relays.GRINCH),
-      (s+1, GrinchShow.GrinchCommands.FINISH_SLIDE),
-      (s+1.4, Show.Commands.ON, Show.Relays.GRINCH),
-      (s+1.9, Show.Commands.OFF, Show.Relays.GRINCH),
-      (s+3+Options.darktime, Show.Commands.RESTART)
+      (s+0.1, Show.Commands.ON, Show.Relays.GRINCH),
+      (s+0.3, Show.Commands.OFF, Show.Relays.GRINCH),
+      (s+0.4, Show.Commands.ON, Show.Relays.GRINCH),
+      (s+0.6, GrinchShow.GrinchCommands.FINISH_SLIDE),
+      GrinchShow.FlashOff(s+0.9, Show.Relays.GRINCH),
+      (s+1.6+Options.darktime, Show.Commands.RESTART)
     ])
 
     

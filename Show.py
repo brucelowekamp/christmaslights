@@ -103,8 +103,20 @@ class Show(object):
       raise NotImplementedError(e)
 
   def LoadTimings(self, events):
+    def flat(array):
+      result = []
+      for i in range(len(array)):
+        if type(array[i]) == list:
+          for j in flat(array[i]):
+            result.append(j)
+        else:
+          result.append(array[i])
+      return result
     #print "adding events", events
-    for e in events:
+    # flatten list as we load the events
+    #for e in [item for sublist in events for item in sublist]:
+    for e in flat(events):
+      #print "pushing e", e
       self.LoadTiming(e)
         
   # stub subclasses can implement if they have their own animation
