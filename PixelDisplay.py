@@ -1,6 +1,8 @@
 import array
 import random
 from Options import Options
+import Ranges
+import unittest
 
 class PixelDisplay(object):
 
@@ -9,18 +11,22 @@ class PixelDisplay(object):
   
   # to deal with strand with unused segments mid-strand, create a class that maps
   # from drawable pixel i to strand pixel j
+  # input is length (total pixels) and prefix (number of dark pixels grinch can pull into)
+  # or
+  # range = range string ('25-50,60-99') of 0-based lit pixels.  length is assumed at last lit pixel
   class StrandMap(object):
-    def __init__(self, length, prefix):
-      self._length = length
-      self._prefix = prefix
-      self._map = [] # simply holds sequence of valid j's
-
-      self._calc_map()
+    def __init__(self, length=None, prefix=None, ranges=None):
+      assert((length is not None and prefix is not None and ranges is None) or
+             (length is None and prefix is None and ranges is not None))
+      if (ranges is None):
+        self._length = length
+        self._prefix = prefix
+        self._map = range(self._prefix, self._length) # simply holds sequence of valid j's
+      else:
+        self._map = Ranges.Parse(ranges)
+        self._length = max(self._map)+1
+        self._prefix = min(self._map)
       
-    # build the map for this strand, overridden by more complex implementations
-    def _calc_map(self):
-      self._map = range(self._prefix, self._length)
-    
     @property
     def strand_len(self):
       return self._length
@@ -111,6 +117,7 @@ class PixelDisplay(object):
 
     self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26))
     self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(250, 18), 0))
+    #self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='18-30,40-249'), 0))
     #self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 0), 0))
     #self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(250, 0), 0))
 
@@ -167,3 +174,25 @@ class PixelDisplay(object):
   def SendDmx(self):
     for s in self._strands:
       s.SendDmx();
+
+class TestStrandMap(unittest.TestCase):
+  def test_single(self):
+    s = PixelDisplay.StrandMap(length=10,prefix=5)
+    self.assertEqual(s.strand_len, 10)
+    self.assertEqual(len(s), 5)
+    self.assertEqual(s._map, [5,6,7,8,9])
+
+  def test_single_range(self):
+    s = PixelDisplay.StrandMap(ranges='5-9')
+    self.assertEqual(s.strand_len, 10)
+    self.assertEqual(len(s), 5)
+    self.assertEqual(s._map, [5,6,7,8,9])
+
+  def test_complex_strand(self):
+    s = PixelDisplay.StrandMap(ranges='5-9,11,15-19')
+    self.assertEqual(s.strand_len, 20)
+    self.assertEqual(len(s), 11)
+    self.assertEqual(s._map, [5,6,7,8,9,11,15,16,17,18,19])
+
+if __name__ == '__main__':
+  unittest.main()
