@@ -1,4 +1,5 @@
 import random
+import math
 from Options import Options
 
 
@@ -87,9 +88,10 @@ class Sparkler(object):
 
 
 
-      
+  # distribute flasher start times over the period they recycle
   def _add_flashers(self):
-    addpercall = self._NumFlashers / (self._Steps * ( 2 if self._reverse else 1) )
+    # round up to make sure we do something
+    addpercall = int(math.ceil(self._NumFlashers / (self._Steps * ( 2.0 if self._reverse else 1.0) )))
     if (addpercall + len(self._flashers) > self._NumFlashers):
         addpercall = self._NumFlashers - len(self._flashers)
     for i in xrange(addpercall):
