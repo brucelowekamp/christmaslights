@@ -6,7 +6,7 @@ import unittest
 
 class PixelDisplay(object):
 
-  MaxBright = 0.50 # fraction of max pixel brightness to run at.  Not configurable
+  MaxBright = 0.40 # fraction of max pixel brightness to run at.  Not configurable
                    # as it's something of a safety issue: fuses will blow if set to 1
   
   # to deal with strand with unused segments mid-strand, create a class that maps

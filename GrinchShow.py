@@ -13,10 +13,10 @@ class GrinchShow(Show):
 
   @staticmethod
   def SetArgs(parser):
-    parser.add_argument('--ondelay', type=int, default=3, help="delay between grinch sleigh appear and lights on")
-    parser.add_argument('--grinchoffdelay', type=int, default=2, help="delay between grinch sleigh appear and lights turning off")
-    parser.add_argument('--startslide', type=int, default=35, help="start grinch slide at seconds")
-    parser.add_argument('--darktime', type=int, default=6, help="time to remain dark after slide before reset")
+    parser.add_argument('--ondelay', type=int, default=1, help="delay between grinch sleigh appear and lights on")
+    parser.add_argument('--grinchoffdelay', type=int, default=1, help="delay between grinch sleigh appear and lights turning off")
+    parser.add_argument('--startslide', type=int, default=25, help="start grinch slide at seconds")
+    parser.add_argument('--darktime', type=int, default=2, help="time to remain dark after slide before reset")
 
 
   # commands used by Grinch animation
@@ -84,7 +84,7 @@ class GrinchShow(Show):
       (0, Show.Commands.OFF, Show.Relays.LASER_PROJ),
       (0, Show.Commands.OFF, Show.Relays.REINDEER),
       (0, Show.Commands.OFF, Show.Relays.SNOWMAN),
-      (0, Show.Commands.ON, Show.Relays.GRINCH_SLEIGH),
+      (0.1, Show.Commands.ON, Show.Relays.GRINCH_SLEIGH),
       (0, Show.Commands.OFF, Show.Relays.GRINCH),
 
       # now start to turn things on
@@ -95,7 +95,7 @@ class GrinchShow(Show):
       (on+5, Show.Commands.PIXELS_ON),
 
       GrinchShow.FlashOff(on+7, Show.Relays.GRINCH_SLEIGH),
-      (on+6+Options.startslide, GrinchShow.GrinchCommands.START_GRINCH),
+      (on+5+Options.startslide, GrinchShow.GrinchCommands.START_GRINCH),
     ])
 
   # when grinch appears then sequence until all off
@@ -134,7 +134,7 @@ class GrinchShow(Show):
     
   def EndGrinch(self):
     print "end GRINCH"
-    s = Options.grinchoffdelay
+    s = 0
     self.LoadTimings( [
       (s+0, Show.Commands.OFF, Show.Relays.GRINCH),
       (s+0.1, Show.Commands.ON, Show.Relays.GRINCH),
