@@ -86,6 +86,15 @@ class Sparkler(object):
       self._display.ColorSet(self._pixel, int(self._curcolor[0]), int(self._curcolor[1]), int(self._curcolor[2]))
 
 
+
+      
+  def _add_flashers(self):
+    addpercall = self._NumFlashers / (self._Steps * ( 2 if self._reverse else 1) )
+    if (addpercall + len(self._flashers) > self._NumFlashers):
+        addpercall = self._NumFlashers - len(self._flashers)
+    for i in xrange(addpercall):
+      self._add_flasher()
+
   def _add_flasher(self):
     while True:
       pixel = self._display.random()
@@ -98,7 +107,7 @@ class Sparkler(object):
     
   def Sparkle(self):
     if (len (self._flashers) < self._NumFlashers ):
-      self._add_flasher()
+      self._add_flashers()
 
     for flasher in self._flashers:
       flasher.flash()
@@ -106,5 +115,3 @@ class Sparkler(object):
     for f in finished:
       self._flashers.remove(f)
       self._being_flashed.remove(f._pixel)
-      self._add_flasher()
-      
