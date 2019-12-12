@@ -133,6 +133,7 @@ class GrinchShow(Show):
     self._finished = True
     
   def EndGrinch(self):
+    print "end GRINCH"
     s = Options.grinchoffdelay
     self.LoadTimings( [
       (s+0, Show.Commands.OFF, Show.Relays.GRINCH),
@@ -155,6 +156,7 @@ class GrinchShow(Show):
         else:
           # after final slideoff and disappear, stop sparkling
           self._sparkler = None
+          print "done"
 
 
     

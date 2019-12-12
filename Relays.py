@@ -18,12 +18,12 @@ class Relays(object):
     return self._draw
   
   def on(self, channel):
-    print "relay on", channel
+    #print "relay on", channel
     self._dmx[channel] = 255
     self._draw = True
 
   def off(self, channel):
-    print "relay off", channel
+    #print "relay off", channel
     self._dmx[channel] = 0
     self._draw = True
 
