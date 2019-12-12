@@ -129,7 +129,7 @@ class GrinchShow(Show):
   def FinishSlide(self):
     print "finish slide"
     gc.collect()
-    self._sliding = self._display.SlideLeft(True)
+    self._sliding = self._display.SlideLeft()
     self._finished = True
     
   def EndGrinch(self):

@@ -82,9 +82,12 @@ class PixelDisplay(object):
       self._pixels[pixel*3+2] = blue
       self._draw = True
 
-    def SlideLeft(self, finish = False):
-      n = self._channels//3 - self._hold if not finish else self._hold
-      for j in xrange(n):
+    # returns a generator used to slide the pixels to the left.  Can be called twice, once slides to
+    # hold pixels left (pixels grinch is holding in his hand) and the second time slides the rest of the
+    # way.  Implemented by sliding a window to the right across the drawn pixels.
+    def SlideLeft(self):
+      slide_to = 3 * (self._map.strand_len - self._hold if self._slid == 0 else self._map.strand_len)
+      while (self._slid < slide_to):
         if (self._map.strand_len <= 150):
           self._slid += 3
         else:
@@ -120,7 +123,7 @@ class PixelDisplay(object):
 
     self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26))
     #self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(250, 18), 0))
-    self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='55-110,141-349'), 20))
+    self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='55-110,141-349'), 22))
     #self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 0), 0))
     #self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(250, 0), 0))
 
@@ -167,10 +170,10 @@ class PixelDisplay(object):
     s.ColorSet(p, red, green, blue)
 
   # slide all strings left and return true/false if more to slide
-  # implemented as generator so it looks like a normal loop
-  def SlideLeft(self, finish = False):
+  # implemented as generator so it looks like a normal loop to caller
+  def SlideLeft(self):
     for s in self._strands:
-      for p in s.SlideLeft(finish):
+      for p in s.SlideLeft():
         yield True
     yield False # not pythonic, but we aren't calling it in a loop, either
 
