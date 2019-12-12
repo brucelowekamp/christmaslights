@@ -85,7 +85,10 @@ class PixelDisplay(object):
     def SlideLeft(self, finish = False):
       n = self._channels//3 - self._hold if not finish else self._hold
       for j in xrange(n):
-        self._slid += 3
+        if (self._map.strand_len <= 150):
+          self._slid += 3
+        else:
+          self._slid += 6 # double rate for longer strands
         self._draw = True
         yield True
 
