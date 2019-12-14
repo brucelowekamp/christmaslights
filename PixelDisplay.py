@@ -124,6 +124,7 @@ class PixelDisplay(object):
     self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26))
     #self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(250, 18), 0))
     self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='55-110,141-349'), 22))
+    self._strands.append(PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-150,196-249'), 22))
     #self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 0), 0))
     #self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(250, 0), 0))
 
