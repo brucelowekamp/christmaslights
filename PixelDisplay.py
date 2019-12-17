@@ -6,8 +6,12 @@ import unittest
 
 class PixelDisplay(object):
 
-  MaxBright = 0.40 # fraction of max pixel brightness to run at.  Not configurable
-                   # as it's something of a safety issue: fuses will blow if set to 1
+  # Pixels at 100% brightness are too bright for nighttime displays.   We can run them
+  # at a fraction of that for a good look and so we can wire fewer power injections.
+  # Not configurable as it's something of a safety issue: fuses will blow if set to 1
+  BrightFrac = 0.40 # fraction of max pixel brightness standard lights go at.  This can be
+                    # overridden to support twinkling in Sparkler
+  BrightSafety = 0.50 # assert if code tries to set average brightness different than this
   
   # to deal with strand with unused segments mid-strand, create a class that maps
   # from drawable pixel i to strand pixel j
@@ -75,11 +79,14 @@ class PixelDisplay(object):
       pixel = self._map[ipixel]
       return [self._pixels[pixel*3+0], self._pixels[pixel*3+1],self._pixels[pixel*3+2]]
 
-    def ColorSet(self, ipixel, red, green, blue):
+    # set ipixel (index of drawable pixels) to colors
+    # bypass if set does not reduce brightness automatically
+    def ColorSet(self, ipixel, red, green, blue, bypass=False):
       pixel = self._map[ipixel]
-      self._pixels[pixel*3+0] = red
-      self._pixels[pixel*3+1] = green
-      self._pixels[pixel*3+2] = blue
+      mult = PixelDisplay.BrightFrac if not bypass else 1
+      self._pixels[pixel*3+0] = int(red * mult)
+      self._pixels[pixel*3+1] = int(green * mult)
+      self._pixels[pixel*3+2] = int(blue * mult)
       self._draw = True
 
     # returns a generator used to slide the pixels to the left.  Can be called twice, once slides to
@@ -103,6 +110,8 @@ class PixelDisplay(object):
 
     def SendDmx(self):
       if (self._draw):
+        # check that average brightness isn't greater than BrightSafety of full on
+        assert ( sum(self._pixels[self._slid:self._slid+self._channels])/self._channels <= 255*PixelDisplay.BrightSafety)
         u = self._universe
         # copies horribly to spread across universes
         bases = xrange(0+self._slid, self._channels+self._slid, self._maxchannels)
@@ -110,8 +119,6 @@ class PixelDisplay(object):
           data = self._pixels[b: min(b+self._maxchannels, self._channels+self._slid)]
           # note: this is slow and non-pythonic, but would need to switch to numpy
           # array for anything reasonable to not return a list instead of array
-          for i in xrange(len(data)):
-            data[i] = int(data[i]*PixelDisplay.MaxBright)
           self._wrapper.Client().SendDmx(u, data, PixelDisplay.Strand.DmxSent)
           u += 1
       self._draw = False
@@ -166,9 +173,10 @@ class PixelDisplay(object):
     return s.ColorGet(p)
 
   # set pixel from global index to color ([ R, G, B ])
-  def ColorSet(self, pixel, red, green, blue):
+  # bypass standard brightness reduction if set
+  def ColorSet(self, pixel, red, green, blue, bypass=False):
     (s, p) = pixel
-    s.ColorSet(p, red, green, blue)
+    s.ColorSet(p, red, green, blue, bypass)
 
   # slide all strings left and return true/false if more to slide
   # implemented as generator so it looks like a normal loop to caller
