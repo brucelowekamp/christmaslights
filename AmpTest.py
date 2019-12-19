@@ -1,4 +1,4 @@
-# run overall system without grinch
+# turn on 50 pixels (typical one physical strand) for amperage tests
 
 from ola.ClientWrapper import ClientWrapper
 from Relays import Relays
