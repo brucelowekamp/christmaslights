@@ -5,31 +5,48 @@ from Sparkler import Sparkler
 import random
 from Options import Options
 
+# decorator to build list of pattern functions to call by name or by list
+class pattern(object):
+  byname = {}
+  funcs = []
+  def __init__(self, f):
+    self._f = f
+    pattern.byname[f.__name__]=self
+    pattern.funcs.append(self)
+
+  def __call__(self, *args):
+    return self._f(*args)
+
+  def __getattr__(self, attr):
+    return getattr(self._f, attr)
+
 
 class PixelPatterns(object):
-  Patterns = None
-
   def __init__(self):
     self._showcount = 0
-
+    self._pattern = None
+    if (Options.pattern is not None):
+      self._pattern = pattern.byname[Options.pattern]
+      
   # set the next pattern in the show to run and return the sparkler (or none)
   def nextPattern(self, display):
-    if (Options.pattern is not None):
-      pattern = PixelPatterns.Patterns[Options.pattern]
+    if (self._pattern is not None):
+      doing = self._pattern
     else:
-      pattern = PixelPatterns.Patterns[self._showcount % len(PixelPatterns.Patterns)]
+      doing = random.choice(pattern.funcs)
     self._showcount += 1
-    return pattern(display)
+    return doing(display)
 
   @staticmethod
   def SetArgs(parser):
     parser.add_argument('--fademin', type=int, default=6, help="min side of exp in rgfade")
-    parser.add_argument('--fadesets', type=int, default=10, help="number of fadesets per strand in rgfade")
+    parser.add_argument('--fadesets', type=int, default=5, help="number of fadesets per strand in rgfade")
     parser.add_argument('--rgsize', type=int, default=5, help="size of red/green blocks in RG pattern")
-    parser.add_argument('--pattern', type=int, help="run only pattern index i" )
+    parser.add_argument('--pattern', type=str, help="run only pattern, choose from "+ str([name for name in pattern.byname]) )
 
 
   @staticmethod
+  @pattern
   def RedGreen(display):
     print ("RedGreen pattern")
     i = 0
@@ -40,6 +57,7 @@ class PixelPatterns(object):
     return Sparkler.Twinkle(display)
   
   @staticmethod
+  #@pattern  # interesting idea, but not used at the moment
   def RGFade(display):
     print ("RGFade pattern")
     minf = Options.fademin
@@ -47,8 +65,8 @@ class PixelPatterns(object):
     
     for s in display.strands():
       # break into fadesets segments and spread remainder out over first segments
-      set_size = s.length // fadesets
-      remain = s.length % fadesets
+      set_size = len(s) // fadesets
+      remain = len(s) % fadesets
       blocks = [set_size] * fadesets
       for b in range(remain):
         blocks[b] += 1
@@ -65,6 +83,7 @@ class PixelPatterns(object):
     return None
 
   @staticmethod
+  @pattern
   def WhiteFlow(display):
     print ("WhiteFlow")
     for p in display:
@@ -104,6 +123,7 @@ class PixelPatterns(object):
     return y
   
   @staticmethod
+  @pattern
   def Rainbow(display):
     print ("Rainbow")
     for s in display.strands():
@@ -130,6 +150,7 @@ class PixelPatterns(object):
     return random.choice(PixelPatterns.HeathersColors)
   
   @staticmethod
+  @pattern
   def HeatherStrand(display):
     print ("RGBWP pattern")
     for p in display:
@@ -138,6 +159,7 @@ class PixelPatterns(object):
     return Sparkler.FlowTo(display, PixelPatterns.PickHeatherColor)
   
   @staticmethod
+  @pattern
   def RGFlow(display):
     print ("RGFlow")
     for p in display:
@@ -146,6 +168,7 @@ class PixelPatterns(object):
 
 
   @staticmethod
+  @pattern
   def RandomFlow(display):
     print ("RandomFlow")
     a = PixelPatterns.PickHeatherColor()
@@ -158,6 +181,7 @@ class PixelPatterns(object):
     return Sparkler.FlowPulse(display, lambda: (b[0], b[1], b[2]))
 
   @staticmethod
+  @pattern
   def RandomStrands(display):
     print ("RandomStrands")
     colors = list(PixelPatterns.HeathersColors)
@@ -169,5 +193,3 @@ class PixelPatterns(object):
     a = colors.pop()
     return Sparkler.FlowPulse(display, lambda: a)
 
-
-PixelPatterns.Patterns = [PixelPatterns.RandomStrands, PixelPatterns.RandomFlow, PixelPatterns.HeatherStrand, PixelPatterns.RedGreen, PixelPatterns.WhiteFlow, PixelPatterns.Rainbow, PixelPatterns.RGFlow]
