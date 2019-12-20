@@ -121,7 +121,8 @@ class Show(object):
     self._relays.SendDmx()
     if (self._loop_count % (TICK_PER_SEC*10) == 0):
       print "loop: ", self._loop_count // TICK_PER_SEC
-    
+      if (self._loop_count == 0):
+        self._target_time = time.time() # setting up new display takes time, so just reset expectations
     self._animateNextFrame()
 
     if (self._sparkler is not None):
