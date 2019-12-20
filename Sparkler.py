@@ -16,10 +16,15 @@ class Sparkler(object):
     parser.add_argument('--sparksteps', type=int, default=2, help="steps up then down in spark")
     parser.add_argument('--flowsteps', type=int, default=15, help="steps up then down in flow")
 
-  # Flow is a factory for a Sparkler that slowly transitions to a new color and then back (optionally not back)
+  # FlowTo is a factory for a Sparkler that slowly transitions to a new color
   @staticmethod
-  def Flow(display, colorfunc, steps=None, frac=None, reverse=True):
-    return Sparkler(display, colorfunc, steps=(steps or Options.flowsteps), fraction=(frac or Options.flowfrac), reverse=reverse, fullBright=False)
+  def FlowTo(display, colorfunc, steps=None, frac=None):
+    return Sparkler(display, colorfunc, steps=(steps or Options.flowsteps), fraction=(frac or Options.flowfrac), reverse=False, fullBright=False)
+    
+  # FlowPulse is a factory for a Sparkler that slowly transitions to an alt color and then back
+  @staticmethod
+  def FlowPulse(display, colorfunc, steps=None, frac=None):
+    return Sparkler(display, colorfunc, steps=(steps or Options.flowsteps), fraction=(frac or Options.flowfrac), reverse=True, fullBright=False)
 
   # twinkle is a factory for a Sparkler that randomly flashes quickly to white and back
   @staticmethod
@@ -32,6 +37,7 @@ class Sparkler(object):
   # reverse indicates to go back
   # steps is how long to take (in each direction for reversing functions)
   # fraction is fraction of pixels in display to be changing at any one time
+  # fullbright says to ignore the brightness cap and go to 100% (currently only used for twinkle white)
   def __init__(self, display, colorfunc, steps=4, fraction=0.02, reverse =  True, fullBright = False):
     self._display = display
     self._Colorfunc = colorfunc

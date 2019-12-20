@@ -56,7 +56,7 @@ class PixelPatterns(object):
     for p in display:
       display.ColorSet(p, 175, 175, 100)
 
-    return Sparkler.Flow(display, lambda: (0, 0, 255))
+    return Sparkler.FlowPulse(display, lambda: (0, 0, 255))
 
   # what we want to do is change the spectral rainbow to look more
   # evenly distributed colorwise to what humans think rainbows look like
@@ -121,14 +121,14 @@ class PixelPatterns(object):
     for p in display:
       color = PixelPatterns.PickHeatherColor()
       display.ColorSet(p, color[0], color[1], color[2])
-    return Sparkler.Flow(display, PixelPatterns.PickHeatherColor, reverse = False)
+    return Sparkler.FlowTo(display, PixelPatterns.PickHeatherColor)
   
   @staticmethod
   def RGFlow(display):
     print ("RGFlow")
     for p in display:
       display.ColorSet(p, 255, 0, 0)
-    return Sparkler.Flow(display, lambda: (0, 255, 0))
+    return Sparkler.FlowPulse(display, lambda: (0, 255, 0))
 
 
   @staticmethod
@@ -141,7 +141,7 @@ class PixelPatterns(object):
     for p in display:
       display.ColorSet(p, a[0], a[1], a[2])
 
-    return Sparkler.Flow(display, lambda: (b[0], b[1], b[2]))
+    return Sparkler.FlowPulse(display, lambda: (b[0], b[1], b[2]))
 
   @staticmethod
   def RandomStrands(display):
@@ -153,7 +153,7 @@ class PixelPatterns(object):
       for p in s:
         s.ColorSet(p, a[0], a[1], a[2])
     a = colors.pop()
-    return Sparkler.Flow(display, lambda: a)
+    return Sparkler.FlowPulse(display, lambda: a)
 
 
 PixelPatterns.Patterns = [PixelPatterns.RandomStrands, PixelPatterns.RandomFlow, PixelPatterns.HeatherStrand, PixelPatterns.RedGreen, PixelPatterns.WhiteFlow, PixelPatterns.Rainbow, PixelPatterns.RGFlow]
