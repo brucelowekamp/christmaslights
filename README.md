@@ -124,4 +124,3 @@ to turn pixels off without relays: gpio -g write 2 1
 # TODO
 - move flickering on or off should be moved to the animation loop from the
 show events.
-- move pattern selection into pattern class

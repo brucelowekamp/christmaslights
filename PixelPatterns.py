@@ -8,12 +8,26 @@ from Options import Options
 
 class PixelPatterns(object):
   Patterns = None
-  
+
+  def __init__(self):
+    self._showcount = 0
+
+  # set the next pattern in the show to run and return the sparkler (or none)
+  def nextPattern(self, display):
+    if (Options.pattern is not None):
+      pattern = PixelPatterns.Patterns[Options.pattern]
+    else:
+      pattern = PixelPatterns.Patterns[self._showcount % len(PixelPatterns.Patterns)]
+    self._showcount += 1
+    return pattern(display)
+
   @staticmethod
   def SetArgs(parser):
     parser.add_argument('--fademin', type=int, default=6, help="min side of exp in rgfade")
     parser.add_argument('--fadesets', type=int, default=10, help="number of fadesets per strand in rgfade")
     parser.add_argument('--rgsize', type=int, default=5, help="size of red/green blocks in RG pattern")
+    parser.add_argument('--pattern', type=int, help="run only pattern index i" )
+
 
   @staticmethod
   def RedGreen(display):

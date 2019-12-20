@@ -51,6 +51,7 @@ class Show(object):
 
   def __init__(self):
     self._wrapper = ClientWrapper()
+    self._patterns = PixelPatterns()
     self._showcount = 0
     
     self._loop_count = 0
@@ -60,7 +61,6 @@ class Show(object):
 
   @staticmethod
   def SetArgs(parser):
-    parser.add_argument('--pattern', type=int, help="run only pattern index i")
     parser.add_argument('--nosleigh', action='store_true', help="no grinch sleigh for high winds")
 
   # begin show
@@ -74,12 +74,7 @@ class Show(object):
 
   def NewDisplay(self):
     gc.collect()
-    if (Options.pattern is not None):
-      pattern = PixelPatterns.Patterns[Options.pattern]
-    else:
-      pattern = PixelPatterns.Patterns[self._showcount % len(PixelPatterns.Patterns)]
-      self._showcount += 1
-    self._sparkler = pattern(self._display)
+    self._sparkler = self._patterns.nextPattern(self._display)
 
   def LoadTiming(self, e):
     ms = int(e[0] * 1000)
