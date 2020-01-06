@@ -15,6 +15,8 @@ class SimpleShow(Show):
                         help="time before changing pattern")
     parser.add_argument('--grincheson', action="store_true",
                         help="turn on even grinch and sleigh")
+    parser.add_argument('--inside', action="store_true",
+                        help="run inside show (family room, no relays)")
 
   def ReStart(self):
     super(SimpleShow, self).ReStart()
@@ -40,6 +42,8 @@ class SimpleShow(Show):
 def main():
   SimpleShow.SetArgs(Options.parser)
   Options.ParseArgs()
+  if Options.inside:
+    Options.relays = False
   show = SimpleShow()
   show.Run()
 

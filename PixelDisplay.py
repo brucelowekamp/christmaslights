@@ -128,13 +128,15 @@ class PixelDisplay(object):
     self._wrapper = wrapper
     self._strands = []
 
-    # grinch show outside
-    self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26))
-    self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='55-110,141-349'), 22))
-    self._strands.append(PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-150,196-249'), 22))
-    # family room
-    #self._strands.append(PixelDisplay.Strand(wrapper, 15, PixelDisplay.StrandMap(150, 0), 0))
-    #self._strands.append(PixelDisplay.Strand(wrapper, 17, PixelDisplay.StrandMap(350, 0), 0))
+    if not Options.inside:
+      # grinch show outside
+      self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26))
+      self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='55-110,141-349'), 22))
+      self._strands.append(PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-150,196-249'), 22))
+    else:  # inside
+      # family room
+      self._strands.append(PixelDisplay.Strand(wrapper, 15, PixelDisplay.StrandMap(150, 0), 0))
+      self._strands.append(PixelDisplay.Strand(wrapper, 17, PixelDisplay.StrandMap(350, 0), 0))
 
     self._length = sum(map(lambda s: len(s), self._strands))
     self._map = []
