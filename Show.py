@@ -1,7 +1,7 @@
 try:
   from ola.ClientWrapper import ClientWrapper
 except ImportError:
-  print "NO OLA INSTALLED!!!  USING STUB OLA!!!"
+  print ("NO OLA INSTALLED!!!  USING STUB OLA!!!")
   from OLAStubClientWrapper import ClientWrapper
 from PixelDisplay import PixelDisplay
 from PixelPatterns import PixelPatterns
@@ -66,7 +66,7 @@ class Show(object):
   # begin show
   # subclass must override, call this, and minimally set up restart timer
   def ReStart(self):
-    print "START"
+    print ("START")
     self._loop_count = 0
     self._display = PixelDisplay(self._wrapper)
     self._relays = Relays(self._wrapper)
@@ -120,7 +120,7 @@ class Show(object):
     self._display.SendDmx()
     self._relays.SendDmx()
     if (self._loop_count % (TICK_PER_SEC*10) == 0):
-      print "loop: ", self._loop_count // TICK_PER_SEC
+      print ("loop: ", self._loop_count // TICK_PER_SEC)
       if (self._loop_count == 0):
         self._target_time = time.time() # setting up new display takes time, so just reset expectations
     self._animateNextFrame()
@@ -134,7 +134,7 @@ class Show(object):
     delta_time = next_target - time.time()
     if (delta_time < 0): #hiccup, fell behind, one extra call
       self._target_time = time.time()+0.001 # make an extra call faking one ms progress, drop the rest
-      print "hiccup!"
+      print ("hiccup!")
       self.SendFrame()
     else:
       self._target_time = next_target

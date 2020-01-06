@@ -64,7 +64,7 @@ class Sparkler(object):
       self._delta = [0, 0, 0]
       self._fullBright = fullBright
       target = list(colorfunc())
-      for i in xrange(3):
+      for i in range(3):
         if (not fullBright):
           target[i] *= PixelDisplay.BrightFrac
         self._delta[i] = (target[i] - self._orig[i])/(steps*1.0)
@@ -78,7 +78,7 @@ class Sparkler(object):
       if ( ( self._reverse and (self._onstep > -1 * self._steps))
              or
           ( not self._reverse and (self._onstep >= 0))):
-        for i in xrange(3):
+        for i in range(3):
           if self._onstep >= 0:
             self._curcolor[i] = self._curcolor[i] + self._delta[i]
           else:
@@ -105,7 +105,7 @@ class Sparkler(object):
     addpercall = int(math.ceil(self._NumFlashers / (self._Steps * ( 2.0 if self._reverse else 1.0) )))
     if (addpercall + len(self._flashers) > self._NumFlashers):
         addpercall = self._NumFlashers - len(self._flashers)
-    for i in xrange(addpercall):
+    for i in range(addpercall):
       self._add_flasher()
 
   def _add_flasher(self):

@@ -41,7 +41,7 @@ time.sleep(5)
 # run program in loop
 while True:
   os.system('python SimpleShow.py')
-  print "SHOW LOOPING!!!!!"
+  print ("SHOW LOOPING!!!!!")
   time.sleep(1)
 
   # run this reset every time b/c if the code exits there is a reason

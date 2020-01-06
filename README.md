@@ -15,7 +15,7 @@ relays, but in principle it would just take an olad setup change to
 map the relay universe to a E1.31-based relay module instead of an
 RPi. 
 
-Language is python 2.  (OLA does not presently support python 3)
+Language is python 2 or 3.  Needs "pip install enum34"
 
 
 There are two versions of the show, SimpleShow, which only displays
@@ -122,5 +122,7 @@ to turn pixels off without relays: gpio -g write 2 1
 
 
 # TODO
+- Make strand definition configuration-based
 - move flickering on or off should be moved to the animation loop from the
 show events.
+- move to numpy and use slices rather than copying

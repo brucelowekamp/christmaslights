@@ -27,6 +27,6 @@ class _Options(object):
 
     self._options = self._parser.parse_args()
 
-    print "args are" , self._options
+    print ("args are" , self._options)
 
 Options = _Options()

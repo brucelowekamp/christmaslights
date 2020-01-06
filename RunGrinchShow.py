@@ -42,7 +42,7 @@ time.sleep(5)
 while True:
   os.system('python GrinchShow.py --nosleigh')
   #os.system('python GrinchShow.py')
-  print "SHOW LOOPING!!!!!"
+  print ("SHOW LOOPING!!!!!")
   time.sleep(1)
 
   # run this reset every time b/c if the code exits there is a reason

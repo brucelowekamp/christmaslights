@@ -101,7 +101,7 @@ class GrinchShow(Show):
 
   # when grinch appears then sequence until all off
   def StartGrinch(self):
-    print "GRINCH"
+    print ("GRINCH")
     off = Options.grinchoffdelay
     s = off + 6 + 1
     t = s + 0.5
@@ -122,19 +122,19 @@ class GrinchShow(Show):
 
 
   def StartSlide(self):
-    print "start slide"
+    print ("start slide")
     gc.collect()
     self._sliding = self._display.SlideLeft()
     self._finished = False
 
   def FinishSlide(self):
-    print "finish slide"
+    print ("finish slide")
     gc.collect()
     self._sliding = self._display.SlideLeft()
     self._finished = True
     
   def EndGrinch(self):
-    print "end GRINCH"
+    print ("end GRINCH")
     s = 0
     self.LoadTimings( [
       (s+0, Show.Commands.OFF, Show.Relays.GRINCH),
@@ -157,7 +157,7 @@ class GrinchShow(Show):
         else:
           # after final slideoff and disappear, stop sparkling
           self._sparkler = None
-          print "done"
+          print ("done")
 
 
     

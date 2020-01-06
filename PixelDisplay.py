@@ -11,7 +11,7 @@ class PixelDisplay(object):
   # Not configurable as it's something of a safety issue: fuses will blow if set to 1
   BrightFrac = 0.40 # fraction of max pixel brightness standard lights go at.  This can be
                     # overridden to support twinkling in Sparkler
-  BrightSafety = 0.50 # assert if code tries to set average brightness different than this
+  BrightSafety = 0.80 # assert if code tries to set average brightness different than this
   
   # to deal with strand with unused segments mid-strand, create a class that maps
   # from drawable pixel i to strand pixel j
@@ -41,7 +41,7 @@ class PixelDisplay(object):
 
     # return iteration of j pixels
     def __iter__(self):
-      return iter(xrange(self._drawable_length))
+      return iter(range(self._drawable_length))
 
     # actual map
     def __getitem__(self, i):
@@ -72,7 +72,7 @@ class PixelDisplay(object):
     # maybe it would be better to have pixels as a class, but no
     # do not expose the map aspect to consumers
     def __iter__(self):
-      return iter(xrange(len(self._map)))
+      return iter(range(len(self._map)))
 
     #return [R, G, B] of pixel
     def ColorGet(self, ipixel):
@@ -114,7 +114,7 @@ class PixelDisplay(object):
         assert ( sum(self._pixels[self._slid:self._slid+self._channels])/self._channels <= 255*PixelDisplay.BrightSafety)
         u = self._universe
         # copies horribly to spread across universes
-        bases = xrange(0+self._slid, self._channels+self._slid, self._maxchannels)
+        bases = range(0+self._slid, self._channels+self._slid, self._maxchannels)
         for b in bases:
           data = self._pixels[b: min(b+self._maxchannels, self._channels+self._slid)]
           # note: this is slow and non-pythonic, but would need to switch to numpy
@@ -128,12 +128,13 @@ class PixelDisplay(object):
     self._wrapper = wrapper
     self._strands = []
 
+    # grinch show outside
     self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26))
-    #self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(250, 18), 0))
     self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='55-110,141-349'), 22))
     self._strands.append(PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-150,196-249'), 22))
-    #self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 0), 0))
-    #self._strands.append(PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(250, 0), 0))
+    # family room
+    #self._strands.append(PixelDisplay.Strand(wrapper, 15, PixelDisplay.StrandMap(150, 0), 0))
+    #self._strands.append(PixelDisplay.Strand(wrapper, 17, PixelDisplay.StrandMap(350, 0), 0))
 
     self._length = sum(map(lambda s: len(s), self._strands))
     self._map = []
