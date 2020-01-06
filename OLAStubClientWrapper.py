@@ -26,7 +26,6 @@ import termios
 import threading
 import traceback
 #from ola.OlaClient import OlaClient
-
 """A simple client wrapper for the OlaClient."""
 
 __author__ = 'nomis52@gmail.com (Simon Newton)'
@@ -39,9 +38,9 @@ class _Event(object):
     time_ms: the number of ms before this event fires
     callback: the callable to run
   """
+
   def __init__(self, time_ms, callback):
-    self._run_at = (datetime.datetime.now() +
-                    datetime.timedelta(milliseconds=time_ms))
+    self._run_at = (datetime.datetime.now() + datetime.timedelta(milliseconds=time_ms))
     self._callback = callback
 
   def __cmp__(self, other):
@@ -55,7 +54,7 @@ class _Event(object):
     """
     time_delta = self._run_at - now
     seconds = time_delta.seconds + time_delta.days * 24 * 3600
-    seconds += time_delta.microseconds / 10.0 ** 6
+    seconds += time_delta.microseconds / 10.0**6
     return seconds
 
   def HasExpired(self, now):
@@ -73,6 +72,7 @@ class SelectServer(object):
   Manages I/O and Events.
   This class isn't thread safe, apart from Execute and Stop.
   """
+
   def __init__(self):
     self._quit = False
     self._ss_thread_id = self._GetThreadID()
@@ -173,9 +173,8 @@ class SelectServer(object):
       False if the calling thread isn't the one that created the select server.
     """
     if self._ss_thread_id != self._GetThreadID():
-      logging.critical(
-         'SelectServer called in a thread other than the owner. '
-         'Owner %d, caller %d' % (self._ss_thread_id, self._GetThreadID()))
+      logging.critical('SelectServer called in a thread other than the owner. '
+                       'Owner %d, caller %d' % (self._ss_thread_id, self._GetThreadID()))
       traceback.print_stack()
 
     # Add the internal descriptor, see comments below
@@ -189,10 +188,8 @@ class SelectServer(object):
       if len(self._events):
         sleep_time = min(1.0, self._events[0].TimeLeft(now))
 
-      i, o, e = select.select(self._read_descriptors.keys(),
-                              self._write_descriptors.keys(),
-                              self._error_descriptors.keys(),
-                              sleep_time)
+      i, o, e = select.select(self._read_descriptors.keys(), self._write_descriptors.keys(),
+                              self._error_descriptors.keys(), sleep_time)
       now = datetime.datetime.now()
       self._CheckTimeouts(now)
       self._CheckDescriptors(i, self._read_descriptors)
@@ -239,7 +236,7 @@ class SelectServer(object):
     self._quit = True
 
   def _DrainAndExecute(self):
-    "Run all the queued functions."""
+    "Run all the queued functions." ""
     # drain socket
     buf_ = array.array('i', [0])
     if fcntl.ioctl(self._local_socket[0], termios.FIONREAD, buf_, 1) == -1:
@@ -254,13 +251,16 @@ class SelectServer(object):
     for f in functions:
       f()
 
+
 class StubClient(object):
   # this exists only to allow SendDmx to be called as a no-op
   def SendDmx(self, a, b, c):
     # print "SendDmx"
     pass
 
+
 class ClientWrapper(object):
+
   def __init__(self):
     self._ss = SelectServer()
     self._client = StubClient()

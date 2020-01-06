@@ -1,30 +1,28 @@
 try:
   from ola.ClientWrapper import ClientWrapper
 except ImportError:
-  print ("NO OLA INSTALLED!!!  USING STUB OLA!!!")
+  print("NO OLA INSTALLED!!!  USING STUB OLA!!!")
   from OLAStubClientWrapper import ClientWrapper
 from PixelDisplay import PixelDisplay
 from PixelPatterns import PixelPatterns
 from Relays import Relays
-from Sparkler import Sparkler
 from Options import Options
-import argparse
-import array
 import gc
-import random
 import time
 import enum
 
 TICK_INTERVAL_MS = 50  # in ms
-TICK_INTERVAL_S = TICK_INTERVAL_MS/1000.0
-TICK_PER_SEC = 1000//TICK_INTERVAL_MS
+TICK_INTERVAL_S = TICK_INTERVAL_MS / 1000.0
+TICK_PER_SEC = 1000 // TICK_INTERVAL_MS
 
 
 class Show(object):
 
-  # objects in show.  Ideally we get this via config but show variants use
-  # the same objects (and pixels which are currently set up in PixelDisplay)
   class Relays(enum.IntEnum):
+    """switched objects in show.  Ideally we get this via config but show
+    variants use the same objects (and pixels which are currently set
+    up in PixelDisplay)
+    """
     # first 8 slots are SSR max 2A for lights
     OLAF = 0
     LASER_PROJ = 1
@@ -39,7 +37,7 @@ class Show(object):
     GRINCH_SLEIGH_FAN = 10
 
     # last is local relay for 12V PS (for pixels)
-    # relay is NC so we don't touch it during the show, used by show drivers 
+    # relay is NC so we don't touch it during the show, used by show drivers
     POWER = 12
 
   # Commands common (not involving animation)
@@ -53,7 +51,7 @@ class Show(object):
     self._wrapper = ClientWrapper()
     self._patterns = PixelPatterns()
     self._showcount = 0
-    
+
     self._loop_count = 0
     self._relays = None
     self._display = None
@@ -66,7 +64,7 @@ class Show(object):
   # begin show
   # subclass must override, call this, and minimally set up restart timer
   def ReStart(self):
-    print ("START")
+    print("START")
     self._loop_count = 0
     self._display = PixelDisplay(self._wrapper)
     self._relays = Relays(self._wrapper)
@@ -79,8 +77,10 @@ class Show(object):
   def LoadTiming(self, e):
     ms = int(e[0] * 1000)
     if (Options.nosleigh and len(e) == 3):
-      if (e[2] == Show.Relays.GRINCH_SLEIGH_FAN): e = (e[0], e[1], Show.Relays.GRINCH_FAN)
-      elif (e[2] == Show.Relays.GRINCH_SLEIGH): e = (e[0], e[1], Show.Relays.GRINCH)
+      if e[2] == Show.Relays.GRINCH_SLEIGH_FAN:
+        e = (e[0], e[1], Show.Relays.GRINCH_FAN)
+      elif e[2] == Show.Relays.GRINCH_SLEIGH:
+        e = (e[0], e[1], Show.Relays.GRINCH)
     # switch... oh yeah
     if (e[1] == Show.Commands.ON):
       self._wrapper.AddEvent(ms, lambda x=e[2]: self._relays.on(x))
@@ -94,6 +94,7 @@ class Show(object):
       raise NotImplementedError(e)
 
   def LoadTimings(self, events):
+    # flatten list as we load the events e.g. flash appear is a sublist
     def flat(array):
       result = []
       for i in range(len(array)):
@@ -103,13 +104,11 @@ class Show(object):
         else:
           result.append(array[i])
       return result
-    #print "adding events", events
-    # flatten list as we load the events
-    #for e in [item for sublist in events for item in sublist]:
+
     for e in flat(events):
-      #print "pushing e", e
+      # print "pushing e", e
       self.LoadTiming(e)
-        
+
   # stub subclasses can implement if they have their own animation
   def _animateNextFrame(self):
     pass
@@ -119,26 +118,28 @@ class Show(object):
     # send (if pending), do first thing to time as precisely as we can
     self._display.SendDmx()
     self._relays.SendDmx()
-    if (self._loop_count % (TICK_PER_SEC*10) == 0):
-      print ("loop: ", self._loop_count // TICK_PER_SEC)
-      if (self._loop_count == 0):
-        self._target_time = time.time() # setting up new display takes time, so just reset expectations
+    if self._loop_count % (TICK_PER_SEC * 10) == 0:
+      print("loop: ", self._loop_count // TICK_PER_SEC)
+      if self._loop_count == 0:
+        self._target_time = time.time(
+        )  # setting up new display takes time, so just reset expectations
     self._animateNextFrame()
 
-    if (self._sparkler is not None):
+    if self._sparkler is not None:
       self._sparkler.Sparkle()
-      
+
     # schedule a function call for remaining time
     # we do this last with the right sleep time in case the frame computation takes a long time.
     next_target = self._target_time + TICK_INTERVAL_S
     delta_time = next_target - time.time()
-    if (delta_time < 0): #hiccup, fell behind, one extra call
-      self._target_time = time.time()+0.001 # make an extra call faking one ms progress, drop the rest
-      print ("hiccup!")
+    if delta_time < 0:  # hiccup, fell behind, one extra call
+      self._target_time = time.time(
+      ) + 0.001  # make an extra call faking one ms progress, drop the rest
+      print("hiccup!")
       self.SendFrame()
     else:
       self._target_time = next_target
-      self._wrapper.AddEvent(int(delta_time*1000), lambda: self.SendFrame())
+      self._wrapper.AddEvent(int(delta_time * 1000), lambda: self.SendFrame())
 
     self._loop_count += 1
 
@@ -146,4 +147,3 @@ class Show(object):
     self.ReStart()
     self.SendFrame()
     self._wrapper.Run()
-    

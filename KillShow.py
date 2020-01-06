@@ -6,7 +6,6 @@ from Show import Show
 from Options import Options
 
 import os
-import argparse
 import time
 
 Options.ParseArgs()
@@ -28,8 +27,3 @@ relays.on(Show.Relays.POWER)
 relays.SendDmx()
 
 time.sleep(5)
-
-
-
-
-
