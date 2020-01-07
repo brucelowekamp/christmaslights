@@ -11,9 +11,6 @@ class SimpleShow(Show):
   def SetArgs(parser):
     parser.add_argument('--holdtime', type=int, default=60, help="time before changing pattern")
     parser.add_argument('--grincheson', action="store_true", help="turn on even grinch and sleigh")
-    parser.add_argument('--inside',
-                        action="store_true",
-                        help="run inside show (family room, no relays)")
 
   def ReStart(self):
     super(SimpleShow, self).ReStart()

@@ -60,6 +60,9 @@ class Show(object):
   @staticmethod
   def SetArgs(parser):
     parser.add_argument('--nosleigh', action='store_true', help="no grinch sleigh for high winds")
+    parser.add_argument('--inside',
+                        action="store_true",
+                        help="run inside show (family room, no relays)")
 
   # begin show
   # subclass must override, call this, and minimally set up restart timer
