@@ -4,6 +4,11 @@ from Sparkler import Sparkler
 import random
 from Options import Options
 
+# easter rgb is way too saturated so scale proportionately
+def EasterScale(x):
+  return ((math.exp(x/255)-1)/(math.exp(1)-1)*.5+.5) * x
+
+
 
 # decorator to build list of pattern functions to call by name or by list
 class pattern(object):
@@ -61,7 +66,7 @@ class PixelPatterns(object):
                         help="run patterns in sequence (not random)")
 
   @staticmethod
-  @pattern
+  # @pattern
   def RedGreen(display):
     print("RedGreen pattern")
     i = 0
@@ -98,7 +103,7 @@ class PixelPatterns(object):
     return None
 
   @staticmethod
-  @pattern
+  # @pattern
   def WhiteFlow(display):
     print("WhiteFlow")
     for p in display:
@@ -152,12 +157,21 @@ class PixelPatterns(object):
         s.ColorSet(p, r, g, b)
     return Sparkler.Twinkle(display)
 
-  # heather wants a strand of red, green, blue, white, and purple
-  HeathersColors = [(255, 0, 0),
-                    (0, 255, 0),
-                    (0, 0, 255),
-                    (175, 175, 100),
-                    (220, 0, 220)]  # yapf:disable
+  # # heather wants a strand of red, green, blue, white, and purple
+  # HeathersColors = [(255, 0, 0),
+  #                   (0, 255, 0),
+  #                   (0, 0, 255),
+  #                   (175, 175, 100),
+  #                   (220, 0, 220)]  # yapf:disable
+  # for easter we override heather's christmas colors with pink etc
+  preHc = [(255, 212, 229),
+                    (224, 205, 255),
+                    (189, 232, 239),
+                    (183, 215, 132),
+                    (254, 255, 162)]  # yapf:disable
+
+  HeathersColors = map (lambda x: map (lambda y: EasterScale(y), x),
+                        preHc)
 
   @staticmethod
   def PickHeatherColor():
@@ -173,7 +187,7 @@ class PixelPatterns(object):
     return Sparkler.FlowTo(display, PixelPatterns.PickHeatherColor)
 
   @staticmethod
-  @pattern
+  # @pattern
   def RGFlow(display):
     print("RGFlow")
     for p in display:
@@ -195,7 +209,7 @@ class PixelPatterns(object):
     return Sparkler.FlowPulse(display, lambda: (b[0], b[1], b[2]))
 
   @staticmethod
-  @pattern
+  # @pattern
   def RandomStrands(display):
     print("RandomStrands")
     colors = list(PixelPatterns.HeathersColors)
@@ -206,3 +220,123 @@ class PixelPatterns(object):
         s.ColorSet(p, a[0], a[1], a[2])
     a = colors.pop()
     return Sparkler.FlowPulse(display, lambda: a)
+
+  @staticmethod
+  @pattern
+  def AmericanFlag(display):
+    print("Stars and Stripe")
+    i = iter(display.strands())
+    first = next(i)
+    second = next(i)
+    third = next(i)
+    for p in first:
+      first.ColorSet(p, 255, 0, 0)
+
+    for p in second:
+      if p < 40:
+        if ( p % 2 == 0):
+          second.ColorSet(p, 0, 0, 255)
+        else:
+          second.ColorSet(p, 175, 175, 100)
+      else:
+        second.ColorSet(p, 175, 175, 100)
+
+    for p in third:
+      if p < 40:
+        if ( p % 2 == 1):
+          third.ColorSet(p, 0, 0, 255)
+        else:
+          third.ColorSet(p, 175, 175, 100)
+      else:
+        third.ColorSet(p, 255, 0, 0)
+
+    return None
+      
+  @staticmethod
+  @pattern
+  def ItalianFlag(display):
+    print("Viva Italia")
+    i = iter(display.strands())
+    first = next(i)
+    second = next(i)
+    third = next(i)
+    for p in first:
+      if p < 57:
+        first.ColorSet(p, 0, 255, 0)
+      elif p < 163:
+        first.ColorSet(p, 175, 175, 100)
+      else:
+        first.ColorSet(p, 255, 0, 0)
+
+    for p in second:
+      if p < 33:
+        second.ColorSet(p, 0, 255, 0)
+      elif p < 66:
+        second.ColorSet(p, 175, 175, 100)
+      else:
+        second.ColorSet(p, 255, 0, 0)
+        
+    for p in third:
+      if p < 33:
+        third.ColorSet(p, 0, 255, 0)
+      elif p < 54:
+        third.ColorSet(p, 175, 175, 100)
+      else:
+        third.ColorSet(p, 255, 0, 0)
+
+    return None
+
+
+  @staticmethod
+  @pattern
+  def SpanishFlag(display):
+    print("Espana")
+    i = iter(display.strands())
+    first = next(i)
+    second = next(i)
+    third = next(i)
+    for p in first:
+      first.ColorSet(p, 255, 0, 0)
+
+    for p in second:
+      second.ColorSet(p, 200, 200, 0)
+        
+    for p in third:
+      third.ColorSet(p, 255, 0, 0)
+    return None
+
+  @staticmethod
+  # @pattern
+  def GermanFlag(display):
+    print("Deutschland")
+    i = iter(display.strands())
+    first = next(i)
+    second = next(i)
+    third = next(i)
+    for p in first:
+      first.ColorSet(p, 200, 200, 0)
+
+    for p in second:
+      second.ColorSet(p, 255, 0, 0)
+        
+    for p in third:
+      third.ColorSet(p, 2, 2, 2)
+    return None
+
+
+  RedWhiteAndBlue = [(255, 0, 0),
+                     (175, 175, 100),
+                     (0, 0, 255)]
+  @staticmethod
+  def PickRWB():
+    return random.choice(PixelPatterns.RedWhiteAndBlue)
+
+  
+  @staticmethod
+  @pattern
+  def RWBFlow(display):
+    print("RWBFlow")
+    for p in display:
+      color = PixelPatterns.PickRWB()
+      display.ColorSet(p, color[0], color[1], color[2])
+    return Sparkler.FlowTo(display, PixelPatterns.PickRWB)

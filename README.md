@@ -27,6 +27,12 @@ don't see the sleigh on the roof until it lights up.
 The light and relay configuration are currently hard-coded into the
 program itself, as are the event sequences.
 
+As of March the SimpleShow was modified to be used as uplifting
+lighting for Easter and isolation.  That was possible by modifying
+Display (because there are no pixels the Grinch is holding) and
+patterns (to run Easter colors plus US, Italian, Spanish flags).  Need
+to parameterize at least those two elements.
+
 The program relies on OLA python library's ClientWrapper to send the
 DMX data and for the event loop.  The main animation loop runs at 20Hz
 and various animations are based on ticks at that rate.  Show story

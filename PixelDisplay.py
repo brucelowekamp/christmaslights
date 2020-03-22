@@ -146,12 +146,19 @@ window not by moving bits
     self._strands = []
 
     if not Options.inside:
+      # easter/spirit display
+      self._strands.append(
+          PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='4-60,92-123,161-299'), 0))
+      self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(100, 0), 0))
+      self._strands.append(
+          PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='0-53,98-149'), 0))
       # grinch show outside
-      self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26))
-      self._strands.append(
-          PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='55-110,141-349'), 22))
-      self._strands.append(
-          PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-150,196-249'), 22))
+      # XXX parameterize me in a config file
+      #self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26))
+      #self._strands.append(
+      #    PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='55-110,141-349'), 22))
+      #self._strands.append(
+      #    PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-150,196-249'), 22))
     else:  # inside
       # family room
       self._strands.append(PixelDisplay.Strand(wrapper, 15, PixelDisplay.StrandMap(150, 0), 0))
