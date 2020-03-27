@@ -230,26 +230,42 @@ class PixelPatterns(object):
     second = next(i)
     third = next(i)
     for p in first:
-      first.ColorSet(p, 255, 0, 0)
+      if p < 65:
+        first.ColorSet(p, 255, 0, 0)
+      elif p < 82:
+        first.ColorSet(p, 200, 200, 175)
+      elif p < 94:
+        first.ColorSet(p, 255, 0, 0)
+      elif p < 112:
+        first.ColorSet(p, 200, 200, 175)
+      else:
+        first.ColorSet(p, 255, 0, 0)
 
     for p in second:
       if p < 40:
-        if ( p % 2 == 0):
-          second.ColorSet(p, 0, 0, 255)
+        if ( p % 3 != 0):
+          second.ColorSet(p, 0, 0, 175)
         else:
-          second.ColorSet(p, 175, 175, 100)
+          second.ColorSet(p, 255, 255, 255)
       else:
-        second.ColorSet(p, 175, 175, 100)
+        second.ColorSet(p, 200, 200, 175)
 
     for p in third:
       if p < 40:
-        if ( p % 2 == 1):
-          third.ColorSet(p, 0, 0, 255)
+        if ( p % 3 != 2):
+          third.ColorSet(p, 0, 0, 175)
         else:
-          third.ColorSet(p, 175, 175, 100)
+          third.ColorSet(p, 255, 255, 255)
+      elif p < 53 + 5:
+        third.ColorSet(p, 255, 0, 0)
+      elif p < 66:
+        third.ColorSet(p, 200, 200, 175)
+      elif p < 84:
+        third.ColorSet(p, 255, 0, 0)
+      elif p < 92:
+        third.ColorSet(p, 200, 200, 175)
       else:
         third.ColorSet(p, 255, 0, 0)
-
     return None
       
   @staticmethod
