@@ -1,3 +1,4 @@
+import itertools
 import math
 from wl_to_rgb import wavelength_to_rgb
 from Sparkler import Sparkler
@@ -238,24 +239,21 @@ class PixelPatterns(object):
         first.ColorSet(p, 255, 0, 0)
       elif p < 112:
         first.ColorSet(p, 200, 200, 175)
-      else:
+      elif p < 179:
         first.ColorSet(p, 255, 0, 0)
+      else:
+        first.ColorSet(p, 200, 200, 175)
+
 
     for p in second:
       if p < 40:
-        if ( p % 3 != 0):
-          second.ColorSet(p, 0, 0, 175)
-        else:
-          second.ColorSet(p, 255, 255, 255)
+        second.ColorSet(p, 0, 0, 255)
       else:
         second.ColorSet(p, 200, 200, 175)
 
     for p in third:
       if p < 40:
-        if ( p % 3 != 2):
-          third.ColorSet(p, 0, 0, 175)
-        else:
-          third.ColorSet(p, 255, 255, 255)
+          third.ColorSet(p, 0, 0, 255)
       elif p < 53 + 5:
         third.ColorSet(p, 255, 0, 0)
       elif p < 66:
@@ -266,7 +264,10 @@ class PixelPatterns(object):
         third.ColorSet(p, 200, 200, 175)
       else:
         third.ColorSet(p, 255, 0, 0)
-    return None
+
+    flashers = list(itertools.chain([ (second, x) for x in range(40) ],
+                                    [ (third, x) for x in range(40) ]))
+    return Sparkler.Twinkle(display, pixelset=flashers)
       
   @staticmethod
   @pattern
@@ -295,6 +296,70 @@ class PixelPatterns(object):
     for p in third:
       if p < 33:
         third.ColorSet(p, 0, 255, 0)
+      elif p < 54:
+        third.ColorSet(p, 175, 175, 100)
+      else:
+        third.ColorSet(p, 255, 0, 0)
+
+    return None
+
+
+  @staticmethod
+  @pattern
+  def EnglishFlag(display):
+    print("Mind the Gap!")
+    i = iter(display.strands())
+    first = next(i)
+    second = next(i)
+    third = next(i)
+    for p in first:
+      if p < 89:
+        first.ColorSet(p, 175, 175, 100)
+      elif p < 143:
+        first.ColorSet(p, 255, 0, 0)
+      else:
+        first.ColorSet(p, 175, 175, 100)
+
+    for p in second:
+      second.ColorSet(p, 255,0,0)
+        
+    for p in third:
+      if p < 40:
+        third.ColorSet(p, 175, 175, 100)
+      elif p < 54:
+        third.ColorSet(p, 255, 0, 0)
+      else:
+        third.ColorSet(p, 175, 175, 100)
+
+    return None
+
+  @staticmethod
+  @pattern
+  def FrenchFlag(display):
+    print("Allez Les Bleus")
+    i = iter(display.strands())
+    first = next(i)
+    second = next(i)
+    third = next(i)
+    for p in first:
+      if p < 57:
+        first.ColorSet(p, 0, 0, 255)
+      elif p < 163:
+        first.ColorSet(p, 175, 175, 100)
+      else:
+        first.ColorSet(p, 255, 0, 0)
+
+    for p in second:
+      if p < 33:
+        second.ColorSet(p, 0, 0, 255)
+      elif p < 66:
+        second.ColorSet(p, 175, 175, 100)
+      else:
+        second.ColorSet(p, 255, 0, 0)
+        
+    for p in third:
+      if p < 33:
+        third.ColorSet(p, 0, 0, 255)
       elif p < 54:
         third.ColorSet(p, 175, 175, 100)
       else:

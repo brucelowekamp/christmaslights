@@ -1,4 +1,5 @@
 import math
+import random
 from Options import Options
 
 
@@ -42,10 +43,11 @@ class Sparkler(object):
 
   # twinkle is a factory for a Sparkler that randomly flashes quickly to white and back
   @staticmethod
-  def Twinkle(display, colorfunc=None, steps=None, frac=None):
+  def Twinkle(display, colorfunc=None, steps=None, frac=None, pixelset=None):
     return Sparkler(display, (colorfunc or WhiteColor),
                     steps=(steps or Options.sparksteps),
                     fraction=(frac or Options.sparkfrac),
+                    pixelset=pixelset,
                     reverse=True,
                     fullBright=True)
 
@@ -55,7 +57,8 @@ class Sparkler(object):
   # steps is how long to take (in each direction for reversing functions)
   # fraction is fraction of pixels in display to be changing at any one time
   # fullbright says to ignore the brightness cap and go to 100% (currently only used for twinkle white)
-  def __init__(self, display, colorfunc, steps=4, fraction=0.02, reverse=True, fullBright=False):
+  # pixelset is a set of (s, p) pixels to pull from if not full display
+  def __init__(self, display, colorfunc, steps=4, fraction=0.02, reverse=True, fullBright=False, pixelset=None):
     self._display = display
     self._Colorfunc = colorfunc
     self._Steps = steps
@@ -65,6 +68,8 @@ class Sparkler(object):
     self._being_flashed = set([])
     assert (not fullBright or reverse)
     self._fullBright = fullBright
+    self._pixelset = pixelset
+    self._pixelfunc = lambda: self._display.random() if pixelset is None else random.choice(self._pixelset)
 
   class Flasher(object):
 
@@ -130,7 +135,7 @@ class Sparkler(object):
 
   def _add_flasher(self):
     while True:
-      pixel = self._display.random()
+      pixel = self._pixelfunc()
       if (pixel not in self._being_flashed):
         break
     self._being_flashed.add(pixel)
