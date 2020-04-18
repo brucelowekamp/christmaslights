@@ -145,24 +145,11 @@ window not by moving bits
     self._wrapper = wrapper
     self._strands = []
 
-    if not Options.inside:
-      # easter/spirit display
-      self._strands.append(
-          PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='4-60,92-123,161-299'), 0))
-      self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(100, 0), 0))
-      self._strands.append(
-          PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='0-53,98-149'), 0))
-      # grinch show outside
-      # XXX parameterize me in a config file
-      #self._strands.append(PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26))
-      #self._strands.append(
-      #    PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='55-110,141-349'), 22))
-      #self._strands.append(
-      #    PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-150,196-249'), 22))
-    else:  # inside
-      # family room
-      self._strands.append(PixelDisplay.Strand(wrapper, 15, PixelDisplay.StrandMap(150, 0), 0))
-      self._strands.append(PixelDisplay.Strand(wrapper, 17, PixelDisplay.StrandMap(350, 0), 0))
+    if len(Options.strands) == 0:
+      Options.strands = ['PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(100,0),0)']
+    #print "strands are "+str(Options.strands)
+    for strand in Options.strands:
+      self._strands.append(eval(strand))
 
     self._length = sum(map(lambda s: len(s), self._strands))
     self._map = []
@@ -172,7 +159,7 @@ window not by moving bits
 
   @staticmethod
   def SetArgs(parser):
-    pass
+    parser.add_argument('--strand', dest='strands', action='append', help="strands in use for display", default=[])
 
   @property
   def length(self):

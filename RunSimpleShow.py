@@ -38,7 +38,7 @@ time.sleep(5)
 
 # run program in loop
 while True:
-  os.system('python SimpleShow.py')
+  os.system('python SimpleShow.py @shows/uplifting')
   print("SHOW LOOPING!!!!!")
   time.sleep(1)
 

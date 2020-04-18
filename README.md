@@ -24,14 +24,13 @@ the grinch sleigh on the roof and has the grinch pull the lights off
 the house.  The grinch show looks better when it's dark enough you
 don't see the sleigh on the roof until it lights up.
 
-The light and relay configuration are currently hard-coded into the
-program itself, as are the event sequences.
+The relay configuration is currently hard-coded into the program
+itself, as are the event sequences.
 
 As of March the SimpleShow was modified to be used as uplifting
-lighting for Easter and isolation.  That was possible by modifying
-Display (because there are no pixels the Grinch is holding) and
-patterns (to run Easter colors plus US, Italian, Spanish flags).  Need
-to parameterize at least those two elements.
+lighting for Easter and isolation.  Adds Easter colors plus US,
+Italian, Spanish, and English flags, plus Blue. Parameterization was
+added to take strand definition and patterns in use from commandline.
 
 The program relies on OLA python library's ClientWrapper to send the
 DMX data and for the event loop.  The main animation loop runs at 20Hz
@@ -128,7 +127,7 @@ to turn pixels off without relays: gpio -g write 2 1
 
 
 # TODO
-- Make strand definition configuration-based
+- have runshow take argument for show file
 - move flickering on or off should be moved to the animation loop from the
 show events.
 - move to numpy and use slices rather than copying

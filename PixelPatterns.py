@@ -32,18 +32,16 @@ class PixelPatterns(object):
 
   def __init__(self):
     self._showcount = 0
-    self._pattern = None
-    if (Options.pattern is not None):
-      self._pattern = pattern.byname[Options.pattern]
+    self._patterns = pattern.funcs
+    if (Options.patterns is not None):
+      self._patterns = [pattern.byname[name] for name in Options.patterns.split(',')]
 
   # set the next pattern in the show to run and return the sparkler (or none)
   def nextPattern(self, display):
-    if self._pattern is not None:
-      doing = self._pattern
-    elif Options.sequence:
-      doing = pattern.funcs[self._showcount % len(pattern.funcs)]
+    if Options.sequence:
+      doing = self._patterns[self._showcount % len(self._patterns)]
     else:
-      doing = random.choice(pattern.funcs)
+      doing = random.choice(self._patterns)
     self._showcount += 1
     return doing(display)
 
@@ -58,16 +56,16 @@ class PixelPatterns(object):
                         type=int,
                         default=5,
                         help="size of red/green blocks in RG pattern")
-    parser.add_argument('--pattern',
+    parser.add_argument('--patterns',
                         type=str,
-                        help="run only pattern, choose from " +
+                        help="comma separated list of patterns to use from " +
                         str([name for name in pattern.byname]))
     parser.add_argument('--sequence',
                         action='store_true',
                         help="run patterns in sequence (not random)")
 
   @staticmethod
-  # @pattern
+  @pattern
   def RedGreen(display):
     print("RedGreen pattern")
     i = 0
@@ -104,9 +102,9 @@ class PixelPatterns(object):
     return None
 
   @staticmethod
-  # @pattern
-  def WhiteFlow(display):
-    print("WhiteFlow")
+  @pattern
+  def WhiteBlueFlow(display):
+    print("WhiteBlueFlow")
     for p in display:
       display.ColorSet(p, 175, 175, 100)
 
@@ -188,7 +186,7 @@ class PixelPatterns(object):
     return Sparkler.FlowTo(display, PixelPatterns.PickHeatherColor)
 
   @staticmethod
-  # @pattern
+  @pattern
   def RGFlow(display):
     print("RGFlow")
     for p in display:
@@ -210,7 +208,7 @@ class PixelPatterns(object):
     return Sparkler.FlowPulse(display, lambda: (b[0], b[1], b[2]))
 
   @staticmethod
-  # @pattern
+  @pattern
   def RandomStrands(display):
     print("RandomStrands")
     colors = list(PixelPatterns.HeathersColors)
@@ -387,7 +385,7 @@ class PixelPatterns(object):
     return None
 
   @staticmethod
-  # @pattern
+  @pattern
   def GermanFlag(display):
     print("Deutschland")
     i = iter(display.strands())
@@ -421,3 +419,13 @@ class PixelPatterns(object):
       color = PixelPatterns.PickRWB()
       display.ColorSet(p, color[0], color[1], color[2])
     return Sparkler.FlowTo(display, PixelPatterns.PickRWB)
+
+
+  @staticmethod
+  @pattern
+  def BlueWall(display):
+    print("Blue")
+    for p in display:
+      display.ColorSet(p, 0, 0, 255)
+    return Sparkler.Twinkle(display)
+  

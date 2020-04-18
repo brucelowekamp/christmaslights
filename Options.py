@@ -3,8 +3,19 @@ import argparse
 
 class _Options(object):
 
+  # also read options from @filename max one per line, ignore comment lines
+  class MyArgumentParser(argparse.ArgumentParser):
+    def __init__(self):
+      super(_Options.MyArgumentParser, self).__init__(fromfile_prefix_chars='@')
+      
+    def convert_arg_line_to_args(self, arg_line):
+      if arg_line.startswith('#'):
+        return []
+      else:
+        return arg_line.split(' ', 1)
+      
   def __init__(self):
-    self._parser = argparse.ArgumentParser()
+    self._parser = _Options.MyArgumentParser()
     self._options = None
 
   def __getattr__(self, attr):
