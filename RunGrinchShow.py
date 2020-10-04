@@ -1,16 +1,21 @@
 # run overall system
 
+# note, beleive this is obsolete with showname being command line but confirm once we have the grinch show set up again
+
 from ola.ClientWrapper import ClientWrapper
 from Relays import Relays
 from Show import Show
 from Options import Options
 import os
+import sys
 import time
+
+pythonexec = sys.executable
 
 Options.ParseArgs()
 
 # kill any currently running shows
-os.system('killall --older-than 1m python')
+os.system('killall -r --older-than 5s python?')
 
 wrapper = ClientWrapper()
 relays = Relays(wrapper)
@@ -39,7 +44,7 @@ time.sleep(5)
 # run program in loop
 while True:
   #os.system('python GrinchShow.py --nosleigh')
-  os.system('python GrinchShow.py')
+  os.system(pythonexec+' GrinchShow.py @shows/grinch')
   print("SHOW LOOPING!!!!!")
   time.sleep(1)
 

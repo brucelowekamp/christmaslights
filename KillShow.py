@@ -11,7 +11,7 @@ import time
 Options.ParseArgs()
 
 # kill any currently running shows
-os.system('killall --older-than 1m python')
+os.system('killall -r --older-than 5s python?')
 
 # restart olad
 os.system('sudo /etc/init.d/olad restart')

@@ -25,7 +25,7 @@ class _Options(object):
   def parser(self):
     return self._parser
 
-  def ParseArgs(self):
+  def ParseArgs(self, additional=None):
     import Show
     import PixelDisplay
     import Relays
@@ -37,6 +37,8 @@ class _Options(object):
     Relays.Relays.SetArgs(self._parser)
     PixelPatterns.PixelPatterns.SetArgs(self._parser)
     Sparkler.Sparkler.SetArgs(self._parser)
+    if additional is not None:
+      additional(self._parser)
 
     self._options = self._parser.parse_args()
 

@@ -1,16 +1,28 @@
 # run overall system without grinch
+# single paramater --showname is name of show in shows directory
 
 from ola.ClientWrapper import ClientWrapper
 from Relays import Relays
 from Show import Show
 from Options import Options
 import os
+import sys
 import time
 
-Options.ParseArgs()
+pythonexec = sys.executable
+
+def ShownameArg(parser):
+  parser.add_argument('--showname',
+                      type=str,
+                      default=None,
+                      help="file in shows directory to get show params from")
+
+
+Options.ParseArgs(additional=ShownameArg)
+assert(Options.showname is not None)
 
 # kill any currently running shows
-os.system('killall --older-than 1m python')
+os.system('killall -r --older-than 5s python?')
 
 wrapper = ClientWrapper()
 relays = Relays(wrapper)
@@ -38,7 +50,7 @@ time.sleep(5)
 
 # run program in loop
 while True:
-  os.system('python SimpleShow.py @shows/uplifting')
+  os.system(pythonexec+' SimpleShow.py @shows/'+Options.showname)
   print("SHOW LOOPING!!!!!")
   time.sleep(1)
 
