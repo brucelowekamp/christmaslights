@@ -1,6 +1,6 @@
 # run these patterns
 #--patterns AmericanFlag,FrenchFlag,RWBFlow,EnglishFlag,BlueWall,SpanishFlag,AmericanFlag,ItalianFlag,BlueWall
---patterns AmericanFlag,RWBFlow,Rainbow
+--patterns PumpkinFlow,PumpkinFlow,AmericanFlag,PumpkinFlow,PumpkinFlow,Rainbow
 --holdtime 21
 --sequence
 # inorder list of strands

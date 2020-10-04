@@ -429,3 +429,20 @@ class PixelPatterns(object):
       display.ColorSet(p, 0, 0, 255)
     return Sparkler.Twinkle(display)
   
+  Halloween = [(255, 125, 0),
+               (35, 0, 70)]
+
+  @staticmethod
+  def PickPumpkin():
+    return random.choice(PixelPatterns.Halloween)
+
+  
+  @staticmethod
+  @pattern
+  def PumpkinFlow(display):
+    print("Pumpkin Flow")
+    for p in display:
+      color = PixelPatterns.PickPumpkin()
+      display.ColorSet(p, color[0], color[1], color[2])
+    return Sparkler.FlowTo(display, PixelPatterns.PickPumpkin)
+
