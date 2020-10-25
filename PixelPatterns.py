@@ -429,7 +429,7 @@ class PixelPatterns(object):
       display.ColorSet(p, 0, 0, 255)
     return Sparkler.Twinkle(display)
   
-  Halloween = [(255, 125, 0),
+  Halloween = [(255, 75, 0),
                (35, 0, 70)]
 
   @staticmethod
