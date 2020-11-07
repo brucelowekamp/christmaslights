@@ -9,6 +9,9 @@ from Options import Options
 def EasterScale(x):
   return ((math.exp(x/255)-1)/(math.exp(1)-1)*.5+.5) * x
 
+Orange = (255, 75, 0)
+Purple = (35, 0, 70)
+Black = (0, 0, 0)
 
 
 # decorator to build list of pattern functions to call by name or by list
@@ -428,9 +431,8 @@ class PixelPatterns(object):
     for p in display:
       display.ColorSet(p, 0, 0, 255)
     return Sparkler.Twinkle(display)
-  
-  Halloween = [(255, 75, 0),
-               (35, 0, 70)]
+
+  Halloween = [Orange, Purple]
 
   @staticmethod
   def PickPumpkin():
@@ -442,7 +444,16 @@ class PixelPatterns(object):
   def PumpkinFlow(display):
     print("Pumpkin Flow")
     for p in display:
-      color = PixelPatterns.PickPumpkin()
+      color = Orange # PixelPatterns.PickPumpkin()
       display.ColorSet(p, color[0], color[1], color[2])
-    return Sparkler.FlowTo(display, PixelPatterns.PickPumpkin)
+    return Sparkler.FlowPulse(display, lambda: Purple, steps=30, frac=0.1)
 
+  @staticmethod
+  @pattern
+  def PumpkinHorror(display):
+    print("Pumpkin Horror")
+    for p in display:
+      color = Black
+      display.ColorSet(p, color[0], color[1], color[2])
+    return Sparkler.GroupFlowPulse(display, lambda: Orange, steps=30, frac=0.2, flicker=True)
+    
