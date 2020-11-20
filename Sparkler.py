@@ -192,7 +192,7 @@ class Sparkler(object):
           valid = False
           break
 
-    print (f"flashing set {strand._universe}:{len(pixels)}({pixels[0][1]}-{pixels[-1][1]})")
+        #print (f"flashing set {strand._universe}:{len(pixels)}({pixels[0][1]}-{pixels[-1][1]})")
 
     for pixel in pixels:
       self._being_flashed.add(pixel)
