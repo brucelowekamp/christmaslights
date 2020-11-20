@@ -34,7 +34,7 @@ length is assumed at last lit pixel
       if (ranges is None):
         self._length = length
         self._prefix = prefix
-        self._map = range(self._prefix, self._length)  # simply holds sequence of valid j's
+        self._map = list(range(self._prefix, self._length))  # simply holds sequence of valid j's
       else:
         self._map = Ranges.Parse(ranges)
         self._length = max(self._map) + 1
@@ -140,15 +140,19 @@ window not by moving bits
           u += 1
       self._draw = False
 
-  def __init__(self, wrapper):
+  def __init__(self, wrapper, strandlist = None):
     self._draw = False
     self._wrapper = wrapper
     self._strands = []
 
-    if len(Options.strands) == 0:
-      Options.strands = ['PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(100,0),0)']
-    #print "strands are "+str(Options.strands)
-    for strand in Options.strands:
+    if strandlist is None:
+      if len(Options.strands) == 0:
+        strandlist = ['PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(100,0),0)']
+      else:
+        #print "strands are "+str(Options.strands)
+        strandlist = Options.strands
+
+    for strand in strandlist:
       self._strands.append(eval(strand))
 
     self._length = sum(map(lambda s: len(s), self._strands))

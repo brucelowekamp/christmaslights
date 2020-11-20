@@ -9,6 +9,7 @@ class GrinchShow(Show):
 
   def __init__(self):
     super(GrinchShow, self).__init__()
+    self._heart = Heart(self._wrapper, lambda: self.RestoreLights())
     self._sliding = None
 
   @staticmethod
@@ -32,6 +33,7 @@ class GrinchShow(Show):
     START_GRINCH = 1  # grinch appears in his sleigh and steals the lights
     START_SLIDE = 2  # grinch begins pulling the lights (pixels) off the house
     FINISH_SLIDE = 3  # grinch is now finished (has coil of lights) so slide them off too
+    START_HEART = 4  # run heart growing animation
 
   def LoadTiming(self, e):
     if (isinstance(e[1], GrinchShow.GrinchCommands)):
@@ -43,6 +45,8 @@ class GrinchShow(Show):
         self._wrapper.AddEvent(ms, lambda: self.StartSlide())
       elif (e[1] == GrinchShow.GrinchCommands.FINISH_SLIDE):
         self._wrapper.AddEvent(ms, lambda: self.FinishSlide())
+      elif (e[1] == GrinchShow.GrinchCommands.START_HEART):
+        self._wrapper.AddEvent(ms, lambda: self._heart.Start())
       else:
         raise NotImplementedError(e)
     else:
@@ -79,6 +83,7 @@ class GrinchShow(Show):
     self._sliding = None
 
     on = Options.ondelay
+    heartDelay = 1.5
     self.LoadTimings([
         #starting state
         (0, Show.Commands.ON, Show.Relays.OLAF_FAN),
@@ -92,6 +97,14 @@ class GrinchShow(Show):
 
         # grinch is turning things back on
         (0.01, Show.Commands.ON, Show.Relays.GRINCH_SLEIGH),
+
+        # run the heart sequence
+        (heartDelay, GrinchShow.GrinchCommands.START_HEART)
+    ])
+
+  def RestoreLights(self):
+    on = 0
+    self.LoadTimings([
         # now start to turn things on
         (on, Show.Commands.ON, Show.Relays.LASER_PROJ),
         GrinchShow.FlashOn(on + 1, Show.Relays.REINDEER),
@@ -99,9 +112,9 @@ class GrinchShow(Show):
         GrinchShow.FlashOn(on + 3, Show.Relays.SNOWMAN),
         (on + 4.5, Show.Commands.PIXELS_ON),
         GrinchShow.FlashOff(on + 6, Show.Relays.GRINCH_SLEIGH),
-        (on + 5 + Options.startslide, GrinchShow.GrinchCommands.START_GRINCH),
-    ])
-
+        (on + 5 + Options.startslide, GrinchShow.GrinchCommands.START_GRINCH)
+      ])
+    
   # when grinch appears then sequence until all off
   def StartGrinch(self):
     print("GRINCH")
@@ -142,6 +155,7 @@ class GrinchShow(Show):
                       (s + 3 + Options.darktime, Show.Commands.RESTART)])
 
   def _animateNextFrame(self):
+    self._heart.AnimateNextFrame()
     if (self._sliding is not None):
       if (not self._sliding.next()):
         self._sliding = None
@@ -156,6 +170,7 @@ class GrinchShow(Show):
 
 def main():
   GrinchShow.SetArgs(Options.parser)
+  Heart.SetArgs(Options.parser)
   Options.ParseArgs()
   show = GrinchShow()
   show.Run()
