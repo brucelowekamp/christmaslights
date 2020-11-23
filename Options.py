@@ -1,5 +1,5 @@
 import argparse
-
+import logging
 
 class _Options(object):
 
@@ -39,10 +39,15 @@ class _Options(object):
     Sparkler.Sparkler.SetArgs(self._parser)
     if additional is not None:
       additional(self._parser)
-
+    self._parser.add_argument('--loglevel', default="WARNING")
     self._options = self._parser.parse_args()
 
     print("args are", self._options)
+
+    numeric_level = getattr(logging, self.loglevel.upper(), None)
+    if not isinstance(numeric_level, int):
+      raise ValueError('Invalid log level: %s' % loglevel)
+    logging.basicConfig(level=numeric_level)
 
 
 Options = _Options()

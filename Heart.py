@@ -1,5 +1,6 @@
 import enum
 import gc
+import logging
 
 Black = (0, 0, 0)
 RedLow = (10, 0, 0)
@@ -9,7 +10,7 @@ RedHigh = (255, 0, 0)
 try:
   from ola.ClientWrapper import ClientWrapper
 except ImportError:
-  print("NO OLA INSTALLED!!!  USING STUB OLA!!!")
+  logging.warning("NO OLA INSTALLED!!!  USING STUB OLA!!!")
   from OLAStubClientWrapper import ClientWrapper
 
 from Options import Options
@@ -28,9 +29,9 @@ class Heart(object):
     self._wrapper = wrapper
     self._onFinished = onFinished
 
-    
-    self._display = PixelDisplay(wrapper,
-                                 strandlist=[f"PixelDisplay.Strand(wrapper, {Options.heartuniverse}, PixelDisplay.StrandMap(ranges=\"{Options.heartranges}\"), 0)"])
+    strandlist = f"PixelDisplay.Strand(wrapper, {Options.heartuniverse}, PixelDisplay.StrandMap(ranges=\"{Options.heartranges}\"), 0)"
+    logging.debug(f"strandlist is {strandlist}")
+    self._display = PixelDisplay(wrapper, strandlist=[strandlist])
     lengths = Ranges.Parse(Options.heartranges, lengths=True)
     self._heartSlices = []
     start = 0
@@ -41,14 +42,14 @@ class Heart(object):
     self._animate = None
     self._sparkler = None
     
-    print (f"config with {self._heartSlices}")
+    logging.debug (f"config with {self._heartSlices}")
     # start black
     self._blackout()
 
     
   def _setHeart(self, heart, color):
     (start, end) = self._heartSlices[heart]
-    print (f"from {start} to {end}")
+    logging.debug (f"from {start} to {end}")
     for p in range(start, end):
       self._strand.ColorSet(p, color[0], color[1], color[2])
       
@@ -107,7 +108,7 @@ class Heart(object):
   
   def AnimateNextFrame(self):
     self._display.SendDmx()
-    if self._animate is not None and self._stepcount % 7 == 0:
+    if self._animate is not None and self._stepcount % 4 == 0:
       try:
         frame = next(self._animate)
         for h in range (len(self._heartSlices)):
