@@ -1,6 +1,7 @@
 import enum
 import gc
 
+from Heart import Heart
 from Options import Options
 from Show import Show
 
@@ -34,6 +35,7 @@ class GrinchShow(Show):
     START_SLIDE = 2  # grinch begins pulling the lights (pixels) off the house
     FINISH_SLIDE = 3  # grinch is now finished (has coil of lights) so slide them off too
     START_HEART = 4  # run heart growing animation
+    HEART_OFF = 5  # blackout heart
 
   def LoadTiming(self, e):
     if (isinstance(e[1], GrinchShow.GrinchCommands)):
@@ -47,6 +49,8 @@ class GrinchShow(Show):
         self._wrapper.AddEvent(ms, lambda: self.FinishSlide())
       elif (e[1] == GrinchShow.GrinchCommands.START_HEART):
         self._wrapper.AddEvent(ms, lambda: self._heart.Start())
+      elif (e[1] == GrinchShow.GrinchCommands.HEART_OFF):
+        self._wrapper.AddEvent(ms, lambda: self._heart.Blackout())
       else:
         raise NotImplementedError(e)
     else:
@@ -112,6 +116,7 @@ class GrinchShow(Show):
         GrinchShow.FlashOn(on + 3, Show.Relays.SNOWMAN),
         (on + 4.5, Show.Commands.PIXELS_ON),
         GrinchShow.FlashOff(on + 6, Show.Relays.GRINCH_SLEIGH),
+        (on + 6, GrinchShow.GrinchCommands.HEART_OFF),
         (on + 5 + Options.startslide, GrinchShow.GrinchCommands.START_GRINCH)
       ])
     

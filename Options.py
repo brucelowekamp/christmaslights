@@ -47,7 +47,7 @@ class _Options(object):
     numeric_level = getattr(logging, self.loglevel.upper(), None)
     if not isinstance(numeric_level, int):
       raise ValueError('Invalid log level: %s' % loglevel)
-    logging.basicConfig(level=numeric_level)
+    logging.basicConfig(format='%(levelname)s:%(filename)s:%(message)s', level=numeric_level)
 
 
 Options = _Options()

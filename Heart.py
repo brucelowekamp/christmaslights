@@ -45,6 +45,7 @@ class Heart(object):
     self._strand = next(self._display.strands())
     self._animate = None
     self._sparkler = None
+    self._stepcount = 0
     
     logging.debug (f"config with {self._heartSlices}")
     # start black
@@ -54,11 +55,11 @@ class Heart(object):
   # set heart #heart to color (r, g, b)
   def _setHeart(self, heart, color):
     (start, end) = self._heartSlices[heart]
-    logging.debug (f"from {start} to {end}")
     for p in range(start, end):
       self._strand.ColorSet(p, color[0], color[1], color[2])
       
   def Blackout(self):
+    logging.debug("Blackout")
     for p in self._display:
       self._display.ColorSet(p, 0, 0, 0)
 
@@ -99,6 +100,7 @@ class Heart(object):
                            lambda: self._stop())
 
   def Start(self):
+    logging.info("Start")
     self._stepcount = 0
     self.Blackout()
     self._animate = self._rollTo()
@@ -115,6 +117,7 @@ class Heart(object):
     if self._animate is not None and self._stepcount % Options.heartpace == 0:
       try:
         frame = next(self._animate)
+        logging.debug (f"heart to {frame}")
         for h in range (len(self._heartSlices)):
           self._setHeart(h, frame[h])
       except StopIteration:
