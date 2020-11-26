@@ -1,6 +1,6 @@
 --patterns Rainbow,RedGreen,RandomStrands,AmericanFlag,WhiteBlueFlow,RGFlow,RWBFlow
---strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(150, 48), 26)
---strand PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='55-110,141-349'), 22)
+--strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(ranges='55-110,141-349'), 22)
+--strand PixelDisplay.Strand(wrapper, 4, PixelDisplay.StrandMap(150, 48), 26)
 --strand PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-150,196-249'), 22)
 --heartranges 0-29,30-74,75-125,126-182
 --heartuniverse 15

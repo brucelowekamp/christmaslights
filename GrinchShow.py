@@ -162,7 +162,7 @@ class GrinchShow(Show):
   def _animateNextFrame(self):
     self._heart.AnimateNextFrame()
     if (self._sliding is not None):
-      if (not self._sliding.next()):
+      if not next(self._sliding):
         self._sliding = None
         if (not self._finished):
           # schedule final scene after first slide finishes
