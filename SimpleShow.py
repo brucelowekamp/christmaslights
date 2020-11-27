@@ -11,6 +11,12 @@ class SimpleShow(Show):
   def SetArgs(parser):
     parser.add_argument('--holdtime', type=int, default=60, help="time before changing pattern")
     parser.add_argument('--grincheson', action="store_true", help="turn on even grinch and sleigh")
+    # ignore these options 
+    parser.add_argument('--heartuniverse', dest='heartuniverse', action='store', help="universe with heart on it", type=int, default=15)
+    parser.add_argument('--heartranges', dest='heartranges', action='store', help="ranges of strand for heart", default='0-29,30-74,75-125,126-182')
+    parser.add_argument('--heartpace', dest='heartpace', action='store', type=int, help="cycles between heart changes", default='4')
+    parser.add_argument('--heartsparkle', dest='heartsparkle', action='store', type=float, help="time to sparkle after flowing", default='2.5')
+
 
   def ReStart(self):
     super(SimpleShow, self).ReStart()
