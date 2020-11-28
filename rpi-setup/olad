@@ -12,13 +12,14 @@
 
 PATH=/usr/local/bin:/bin:/usr/bin
 NAME=olad
-DAEMON=/usr/bin/$NAME
+DAEMON=/usr/local/bin/$NAME
 PIDFILE=/var/run/$NAME.pid
 DESC="OLA daemon"
 USER=olad
 LOG_LEVEL=3
 DAEMON_ARGS="--syslog --log-level 3  --config-dir /etc/ola"
 CONFIG_DIR="/var/lib/ola/conf"
+export LD_LIBRARY_PATH=/usr/local/lib:
 
 # Reads config file (will override defaults above)
 [ -r /etc/default/ola ] && . /etc/default/ola
