@@ -5,10 +5,6 @@ from Sparkler import Sparkler
 import random
 from Options import Options
 
-# easter rgb is way too saturated so scale proportionately
-def EasterScale(x):
-  return ((math.exp(x/255)-1)/(math.exp(1)-1)*.5+.5) * x
-
 Orange = (255, 75, 0)
 Purple = (35, 0, 70)
 Black = (0, 0, 0)
@@ -160,20 +156,24 @@ class PixelPatterns(object):
     return Sparkler.Twinkle(display)
 
   # # heather wants a strand of red, green, blue, white, and purple
-  # HeathersColors = [(255, 0, 0),
-  #                   (0, 255, 0),
-  #                   (0, 0, 255),
-  #                   (175, 175, 100),
-  #                   (220, 0, 220)]  # yapf:disable
+  HeathersColors = [(255, 0, 0),
+                    (0, 255, 0),
+                    (0, 0, 255),
+                    (175, 175, 100),
+                    (220, 0, 220)]  # yapf:disable
   # for easter we override heather's christmas colors with pink etc
-  preHc = [(255, 212, 229),
-                    (224, 205, 255),
-                    (189, 232, 239),
-                    (183, 215, 132),
-                    (254, 255, 162)]  # yapf:disable
+  # preHc = [(255, 212, 229),
+  #          (224, 205, 255),
+  #          (189, 232, 239),
+  #          (183, 215, 132),
+  #          (254, 255, 162)]  # yapf:disable
 
-  HeathersColors = map (lambda x: map (lambda y: EasterScale(y), x),
-                        preHc)
+  # # easter rgb is way too saturated so scale proportionately
+  # def EasterScale(x):
+  #   return ((math.exp(x/255)-1)/(math.exp(1)-1)*.5+.5) * x
+
+  # HeathersColors = list(map (lambda x: list(map (lambda y: PixelPatterns.EasterScale(y), x)),
+  #                       preHc))
 
   @staticmethod
   def PickHeatherColor():
@@ -238,9 +238,13 @@ class PixelPatterns(object):
         first.ColorSet(p, 200, 200, 175)
       elif p < 94:
         first.ColorSet(p, 255, 0, 0)
-      elif p < 112:
+      elif p < 106:
         first.ColorSet(p, 200, 200, 175)
-      elif p < 179:
+      elif p < 116:
+        first.ColorSet(p, 255, 0, 0)
+      elif p < 135:
+        first.ColorSet(p, 200, 200, 175)
+      elif p < 201:
         first.ColorSet(p, 255, 0, 0)
       else:
         first.ColorSet(p, 200, 200, 175)
@@ -255,9 +259,9 @@ class PixelPatterns(object):
     for p in third:
       if p < 40:
           third.ColorSet(p, 0, 0, 255)
-      elif p < 53 + 5:
+      elif p < 53 + 7:
         third.ColorSet(p, 255, 0, 0)
-      elif p < 66:
+      elif p < 68:
         third.ColorSet(p, 200, 200, 175)
       elif p < 84:
         third.ColorSet(p, 255, 0, 0)
