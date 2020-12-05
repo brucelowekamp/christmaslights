@@ -22,8 +22,9 @@
 # 
 # m h  dom mon dow   command
 
-45 16 * * * cd christmaslights && python3 RunSimpleShow.py --showname grinch
-00 18 * * * cd christmaslights && python3 RunGrinchShow.py
+00 06 * * * cd christmaslights && python3 ScheduleAtSunset.py
+#45 16 * * * cd christmaslights && python3 RunSimpleShow.py --showname grinch
+#30 17 * * * cd christmaslights && python3 RunGrinchShow.py
 #00 17 * * * cd christmaslights && python3 RunSimpleShow.py --showname patriotic
 59 23 * * * cd christmaslights && python3 KillShow.py
 #00 03 * * * cd christmaslights && python3 RunSimpleShow.py

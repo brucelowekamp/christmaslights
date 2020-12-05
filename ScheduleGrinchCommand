@@ -1,1 +1,1 @@
-cd christmaslights && python3 RunGrinchShow.py
+python3 RunGrinchShow.py

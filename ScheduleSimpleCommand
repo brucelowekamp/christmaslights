@@ -1,1 +1,1 @@
-cd christmaslights && python3 RunSimpleShow.py --showname grinch
+python3 RunSimpleShow.py --showname grinch
