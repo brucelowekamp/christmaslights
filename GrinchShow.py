@@ -110,10 +110,10 @@ class GrinchShow(Show):
     on = 0
     self.LoadTimings([
         # now start to turn things on
-        (on, Show.Commands.ON, Show.Relays.LASER_PROJ),
-        GrinchShow.FlashOn(on + 1, Show.Relays.REINDEER),
-        GrinchShow.FlashOn(on + 2, Show.Relays.OLAF),
-        GrinchShow.FlashOn(on + 3, Show.Relays.SNOWMAN),
+        GrinchShow.FlashOn(on + 0, Show.Relays.REINDEER),
+        GrinchShow.FlashOn(on + 1, Show.Relays.OLAF),
+        GrinchShow.FlashOn(on + 2, Show.Relays.SNOWMAN),
+        (on + 3, Show.Commands.ON, Show.Relays.LASER_PROJ),
         (on + 4.5, Show.Commands.PIXELS_ON),
         GrinchShow.FlashOff(on + 6, Show.Relays.GRINCH_SLEIGH),
         (on + 6, GrinchShow.GrinchCommands.HEART_OFF),
@@ -156,8 +156,8 @@ class GrinchShow(Show):
                       (s + 0.15, Show.Commands.OFF, Show.Relays.GRINCH),
                       (s + 0.25, Show.Commands.ON, Show.Relays.GRINCH),
                       (s + 0.25, GrinchShow.GrinchCommands.FINISH_SLIDE),
-                      GrinchShow.FlashOff(s + 0.75, Show.Relays.GRINCH),
-                      (s + 3 + Options.darktime, Show.Commands.RESTART)])
+                      GrinchShow.FlashOff(s + 1.75, Show.Relays.GRINCH),
+                      (s + 4 + Options.darktime, Show.Commands.RESTART)])
 
   def _animateNextFrame(self):
     self._heart.AnimateNextFrame()
