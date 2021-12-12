@@ -112,9 +112,9 @@ window not by moving bits
                       self._hold if self._slid == 0 else self._map.strand_len)
       while (self._slid < slide_to):
         if (self._map.strand_len <= 150):
-          self._slid += 3
+          self._slid += 6
         else:
-          self._slid += 6  # double rate for longer strands
+          self._slid += 12  # double rate for longer strands
         self._draw = True
         yield True
 
