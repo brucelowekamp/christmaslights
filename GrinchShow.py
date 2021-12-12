@@ -1,5 +1,6 @@
 import enum
 import gc
+import random
 
 from Heart import Heart
 from Options import Options
@@ -27,6 +28,10 @@ class GrinchShow(Show):
                         type=int,
                         default=4,
                         help="time to remain dark after slide before reset")
+    parser.add_argument('--grinchprob',
+                        type=float,
+                        default=0.40,
+                        help="Prob (e.g. 0.50) that grinch will appear, else new pattern")
 
   # commands used by Grinch animation
   class GrinchCommands(enum.Enum):
@@ -35,6 +40,7 @@ class GrinchShow(Show):
     FINISH_SLIDE = 3  # grinch is now finished (has coil of lights) so slide them off too
     START_HEART = 4  # run heart growing animation
     HEART_OFF = 5  # blackout heart
+    PIXEL_SHOW = 6 # next pixel show and decide if doing grinch
 
   def LoadTiming(self, e):
     if (isinstance(e[1], GrinchShow.GrinchCommands)):
@@ -50,6 +56,8 @@ class GrinchShow(Show):
         self._wrapper.AddEvent(ms, lambda: self._heart.Start())
       elif (e[1] == GrinchShow.GrinchCommands.HEART_OFF):
         self._wrapper.AddEvent(ms, lambda: self._heart.Blackout())
+      elif (e[1] == GrinchShow.GrinchCommands.PIXEL_SHOW):
+        self._wrapper.AddEvent(ms, lambda: self.PixelShow())
       else:
         raise NotImplementedError(e)
     else:
@@ -113,12 +121,23 @@ class GrinchShow(Show):
         GrinchShow.FlashOn(on + 1, Show.Relays.OLAF),
         GrinchShow.FlashOn(on + 2, Show.Relays.SNOWMAN),
         (on + 3, Show.Commands.ON, Show.Relays.LASER_PROJ),
-        (on + 4.5, Show.Commands.PIXELS_ON),
+        (on + 4.5, GrinchShow.GrinchCommands.PIXEL_SHOW),
         GrinchShow.FlashOff(on + 6, Show.Relays.GRINCH_SLEIGH),
         (on + 6, GrinchShow.GrinchCommands.HEART_OFF),
-        (on + 6 + Options.holdtime, GrinchShow.GrinchCommands.START_GRINCH)
       ])
-    
+
+  # advance to the next pixel show and decide whether to do grinch show or not
+  def PixelShow(self):
+    print("New Pixel Show")
+    self.LoadTimings([(0, Show.Commands.PIXELS_ON)])
+    if (random.random() < Options.grinchprob):
+      print ("Planning Grinch")
+      self.LoadTimings([(Options.holdtime, GrinchShow.GrinchCommands.START_GRINCH)])
+    else:
+      print ("No Grinch")
+      self.LoadTimings([(Options.holdtime, GrinchShow.GrinchCommands.PIXEL_SHOW)])
+      
+
   # when grinch appears then sequence until all off
   def StartGrinch(self):
     print("GRINCH")

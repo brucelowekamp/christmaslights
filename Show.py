@@ -64,7 +64,7 @@ class Show(object):
     parser.add_argument('--inside',
                         action="store_true",
                         help="run inside show (family room, no relays)")
-    parser.add_argument('--holdtime', type=int, default=60, help="time to hold pattern before changing/grinch slide")
+    parser.add_argument('--holdtime', type=int, default=45, help="time to hold pattern before changing/grinch slide")
 
   # begin show
   # subclass must override, call this, and minimally set up restart timer
