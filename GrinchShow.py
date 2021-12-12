@@ -23,7 +23,6 @@ class GrinchShow(Show):
                         type=int,
                         default=1,
                         help="delay between grinch sleigh appear and lights turning off")
-    parser.add_argument('--startslide', type=int, default=45, help="start grinch slide at seconds")
     parser.add_argument('--darktime',
                         type=int,
                         default=4,
@@ -70,7 +69,7 @@ class GrinchShow(Show):
             (t + 0.60, Show.Commands.ON, r)] #yapf:disable
 
   @staticmethod
-  # sequence of events that flashes on a relay r starting at time t
+  # sequence of events that flashes off a relay r starting at time t
   def FlashOff(t, r):
     return [(t, Show.Commands.OFF, r),
             (t + 0.05, Show.Commands.ON, r),
@@ -117,7 +116,7 @@ class GrinchShow(Show):
         (on + 4.5, Show.Commands.PIXELS_ON),
         GrinchShow.FlashOff(on + 6, Show.Relays.GRINCH_SLEIGH),
         (on + 6, GrinchShow.GrinchCommands.HEART_OFF),
-        (on + 5 + Options.startslide, GrinchShow.GrinchCommands.START_GRINCH)
+        (on + 6 + Options.holdtime, GrinchShow.GrinchCommands.START_GRINCH)
       ])
     
   # when grinch appears then sequence until all off

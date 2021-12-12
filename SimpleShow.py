@@ -9,7 +9,6 @@ class SimpleShow(Show):
 
   @staticmethod
   def SetArgs(parser):
-    parser.add_argument('--holdtime', type=int, default=60, help="time before changing pattern")
     parser.add_argument('--grincheson', action="store_true", help="turn on even grinch and sleigh")
     # ignore these options 
     parser.add_argument('--heartuniverse', dest='heartuniverse', action='store', help="universe with heart on it", type=int, default=15)
