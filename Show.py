@@ -23,6 +23,7 @@ class Show(object):
     variants use the same objects (and pixels which are currently set
     up in PixelDisplay)
     """
+    # manual control gpio -g write <n+11> 1/0
     # first 8 slots are SSR max 2A for lights
     OLAF = 0
     LASER_PROJ = 1

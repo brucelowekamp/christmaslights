@@ -23,7 +23,7 @@ class GrinchShow(Show):
                         type=int,
                         default=1,
                         help="delay between grinch sleigh appear and lights turning off")
-    parser.add_argument('--startslide', type=int, default=25, help="start grinch slide at seconds")
+    parser.add_argument('--startslide', type=int, default=45, help="start grinch slide at seconds")
     parser.add_argument('--darktime',
                         type=int,
                         default=4,

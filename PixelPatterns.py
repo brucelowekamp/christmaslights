@@ -7,6 +7,7 @@ from Options import Options
 
 Orange = (255, 75, 0)
 Purple = (35, 0, 70)
+DarkPurple = (5, 0, 6)
 Black = (0, 0, 0)
 
 
@@ -223,6 +224,15 @@ class PixelPatterns(object):
     a = colors.pop()
     return Sparkler.FlowPulse(display, lambda: a)
 
+
+  RedWhiteAndBlue = [(255, 0, 0),
+                     (175, 175, 100),
+                     (0, 0, 255)]
+  @staticmethod
+  def PickRWB():
+    return random.choice(PixelPatterns.RedWhiteAndBlue)
+
+  
   @staticmethod
   @pattern
   def AmericanFlag(display):
@@ -231,18 +241,20 @@ class PixelPatterns(object):
     first = next(i)
     second = next(i)
     third = next(i)
+    trees = next(i)
+    
     for p in first:
-      if p < 65:
+      if p < 64:
         first.ColorSet(p, 255, 0, 0)
-      elif p < 82:
+      elif p < 81:
         first.ColorSet(p, 200, 200, 175)
-      elif p < 94:
+      elif p < 93:
         first.ColorSet(p, 255, 0, 0)
-      elif p < 106:
+      elif p < 104:
         first.ColorSet(p, 200, 200, 175)
       elif p < 116:
         first.ColorSet(p, 255, 0, 0)
-      elif p < 135:
+      elif p < 133:
         first.ColorSet(p, 200, 200, 175)
       elif p < 201:
         first.ColorSet(p, 255, 0, 0)
@@ -270,6 +282,10 @@ class PixelPatterns(object):
       else:
         third.ColorSet(p, 255, 0, 0)
 
+    for p in trees:
+      color = PixelPatterns.PickRWB()
+      trees.ColorSet(p, color[0], color[1], color[2])
+      
     flashers = list(itertools.chain([ (second, x) for x in range(40) ],
                                     [ (third, x) for x in range(40) ]))
     return Sparkler.Twinkle(display, pixelset=flashers)
@@ -409,14 +425,6 @@ class PixelPatterns(object):
       third.ColorSet(p, 2, 2, 2)
     return None
 
-
-  RedWhiteAndBlue = [(255, 0, 0),
-                     (175, 175, 100),
-                     (0, 0, 255)]
-  @staticmethod
-  def PickRWB():
-    return random.choice(PixelPatterns.RedWhiteAndBlue)
-
   
   @staticmethod
   @pattern
@@ -450,14 +458,14 @@ class PixelPatterns(object):
     for p in display:
       color = Orange # PixelPatterns.PickPumpkin()
       display.ColorSet(p, color[0], color[1], color[2])
-    return Sparkler.FlowPulse(display, lambda: Purple, steps=30, frac=0.1)
+    return Sparkler.FlowPulse(display, lambda: DarkPurple, steps=200, frac=0.5)
 
   @staticmethod
   @pattern
   def PumpkinHorror(display):
     print("Pumpkin Horror")
     for p in display:
-      color = Black
+      color = DarkPurple
       display.ColorSet(p, color[0], color[1], color[2])
-    return Sparkler.GroupFlowPulse(display, lambda: Orange, steps=30, frac=0.2, flicker=True)
+    return Sparkler.GroupFlowPulse(display, lambda: Orange, steps=30, frac=0.3, flicker=True)
     

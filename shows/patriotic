@@ -1,9 +1,10 @@
 # run these patterns
 #--patterns AmericanFlag,FrenchFlag,RWBFlow,EnglishFlag,BlueWall,SpanishFlag,AmericanFlag,ItalianFlag,BlueWall
---patterns AmericanFlag,AmericanFlag,AmericanFlag,RWBFlow
+--patterns RWBFlow
 --holdtime 60
 --sequence
 # inorder list of strands
---strand PixelDisplay.Strand(wrapper, 2, PixelDisplay.StrandMap(ranges='4-60,92-123,161-299'), 0)
---strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(100, 0), 0)
---strand PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='0-53,98-149'), 0)
+--norelays
+--strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(ranges='55-110,141-184,200-349'), 26)
+--strand PixelDisplay.Strand(wrapper, 4, PixelDisplay.StrandMap(100, 0), 0)
+--strand PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-153,197-249'), 56)
