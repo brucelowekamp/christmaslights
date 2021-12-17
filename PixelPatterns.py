@@ -258,8 +258,10 @@ class PixelPatterns(object):
         first.ColorSet(p, 200, 200, 175)
       elif p < 201:
         first.ColorSet(p, 255, 0, 0)
-      else:
+      elif p < 241:
         first.ColorSet(p, 200, 200, 175)
+      else:
+        first.ColorSet(p, 255, 0, 0)
 
 
     for p in second:
