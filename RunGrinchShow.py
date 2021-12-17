@@ -44,7 +44,7 @@ time.sleep(5)
 # run program in loop
 while True:
   #os.system('python GrinchShow.py --nosleigh')
-  os.system(pythonexec+' GrinchShow.py @shows/grinch')
+  os.system(pythonexec+' GrinchShow.py @shows/grinchshow')
   print("SHOW LOOPING!!!!!")
   time.sleep(1)
 
