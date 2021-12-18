@@ -1,4 +1,3 @@
---patterns Rainbow,RedGreen,RandomStrands,WhiteBlueFlow,RGFlow,RWBFlow
+--patterns Rainbow,RedGreen,RandomFlow,WhiteBlueFlow,RGFlow,HeatherStrand
 --norelays
---strand PixelDisplay.Strand(wrapper, 15, PixelDisplay.StrandMap(150, 0), 0)
---strand PixelDisplay.Strand(wrapper, 17, PixelDisplay.StrandMap(350, 0), 0)
+--strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(350, 0), 0)
