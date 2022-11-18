@@ -37,13 +37,13 @@ class PixelPatterns(object):
       self._patterns = [pattern.byname[name] for name in Options.patterns.split(',')]
 
   # set the next pattern in the show to run and return the sparkler (or none)
-  def nextPattern(self, display):
+  def nextPattern(self):
     if Options.sequence:
       doing = self._patterns[self._showcount % len(self._patterns)]
     else:
       doing = random.choice(self._patterns)
     self._showcount += 1
-    return doing(display)
+    return doing
 
   @staticmethod
   def SetArgs(parser):

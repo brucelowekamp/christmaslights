@@ -74,10 +74,12 @@ class Show(object):
     self._display = PixelDisplay(self._wrapper)
     self._relays = Relays(self._wrapper)
     self._sparkler = None
+    self._thispattern = None
 
   def NewDisplay(self):
     gc.collect()
-    self._sparkler = self._patterns.nextPattern(self._display)
+    self._thispattern = self._patterns.nextPattern()
+    self._sparkler = self._thispattern(self.display)
 
   def LoadTiming(self, e):
     ms = int(e[0] * 1000)
