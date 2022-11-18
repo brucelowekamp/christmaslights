@@ -1,3 +1,5 @@
---patterns Rainbow,RedGreen,RandomFlow,WhiteBlueFlow,RGFlow,HeatherStrand
+#--patterns Rainbow,RedGreen,RandomFlow,WhiteBlueFlow,RGFlow,HeatherStrand
+--patterns Rainbow,RandomFlow,WhiteBlueFlow,HeatherStrand
 --norelays
 --strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(350, 0), 0)
+--holdtime 120
