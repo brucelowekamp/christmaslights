@@ -24,29 +24,32 @@ assert(Options.showname is not None)
 # kill any currently running shows
 os.system('killall -r --older-than 5s python?')
 
-wrapper = ClientWrapper()
-relays = Relays(wrapper)
+# turn power supply on 
+os.system('gpio -g write 2 0')
 
-# turn off 12v (on NC so sense is reversed)
-# (conincidentally turns off everything else, too)
-# (should already be off)
-relays.on(Show.Relays.POWER)
-relays.SendDmx()
-
-time.sleep(2)
+time.sleep(10)
 
 # restart olad
 os.system('sudo /etc/init.d/olad restart')
 
-time.sleep(5)
 
-wrapper = ClientWrapper()
-relays = Relays(wrapper)
+#wrapper = ClientWrapper()
+#relays = Relays(wrapper)
 
-relays.off(Show.Relays.POWER)
-relays.SendDmx()
 
-time.sleep(5)
+
+# turn off 12v (on NC so sense is reversed)
+# (conincidentally turns off everything else, too)
+# (should already be off)
+#relays.on(Show.Relays.POWER)
+#relays.SendDmx()
+
+#time.sleep(5)
+
+#relays.off(Show.Relays.POWER)
+#relays.SendDmx()
+
+time.sleep(8)
 
 # run program in loop
 while True:
