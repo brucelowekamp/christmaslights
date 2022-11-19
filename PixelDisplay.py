@@ -70,6 +70,7 @@ window not by moving bits
       self._universe = universe
       self._maxchannels = maxchannels
       self._channels = map.strand_len * 3
+      # note to self, why is this * 2 here?
       self._pixels = array.array('B', [0] * self._channels * 2)
       self._map = map
       self._hold = hold
@@ -87,6 +88,13 @@ window not by moving bits
     def __iter__(self):
       return iter(range(len(self._map)))
 
+    # direct array interface for animation
+    # don't save this reference but call it each time there's an update
+    # so new data is sent
+    def Raw(self):
+      self._draw = True
+      return self._pixels
+    
     #return [R, G, B] of pixel
     def ColorGet(self, ipixel):
       pixel = self._map[ipixel]
