@@ -23,6 +23,19 @@ from PixelPatterns import PixelPatterns
 import Ranges
 from Sparkler import Sparkler
 
+# to test: python3 Bicycle.py --pattern=Rainbow --wheel=80,51,2
+# --spinner=8,4,20,140,148,156,164
+#
+# Bicycle has three features.  The frame bits are normal pattern.  The
+# wheels can be split into two bits: tires and spokes.  Tires (and
+# chains) are simply a sequence that rotates in a circle.  Spokes and
+# crankset are referred to as spinners, where the line goes in a
+# sequence.
+#
+# it's very important to lay out the tires so they move forward,
+# ordered clockwise from the right side.  Same ordering with spokes,
+# they move clockwise, going over one slot and back across the wheel
+# so each spoke reverses.
 class Bicycle(object):
   @staticmethod
   def SetArgs(parser):
