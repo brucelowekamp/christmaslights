@@ -43,7 +43,7 @@ from Sparkler import Sparkler
 class Bicycle(object):
   @staticmethod
   def SetArgs(parser):
-    parser.add_argument('--bicycleuniverse', dest='bicycleuniverse', action='store', help="universe with bicycle on it", type=int, default=1)
+    parser.add_argument('--bicycleuniverse', dest='bicycleuniverse', action='store', help="universe with bicycle on it", type=int, default=-1)
     parser.add_argument('--bicycleranges', dest='bicycleranges', action='store', help="strand ranges for bicycle.  should include only first of each wheel/crank spinner include extra pixel  ", default='0-70,140-147,200')
     parser.add_argument('--wheel', dest='wheeldef', action='append', help="wheel start, length, pace", default=[]) # --wheel=80,51,1 --wheel=100,10,1
     parser.add_argument('--wheelfade', dest='wheelfade', type=float, default=3.5, help="exp scaling for wheel fade")
@@ -121,9 +121,8 @@ class Bicycle(object):
             dest[self._starts[0]+i+1] = 0
             dest[self._starts[0]+i+2] = 0
         
-  def __init__(self, wrapper, pattern, onFinished):
+  def __init__(self, wrapper, pattern):
     self._wrapper = wrapper
-    self._onFinished = onFinished
 
     strandlist = f"PixelDisplay.Strand(wrapper, {Options.bicycleuniverse}, PixelDisplay.StrandMap(ranges=\"{Options.bicycleranges}\"), 0)"
     logging.debug(f"bicycle strandlist is {strandlist}")
@@ -138,6 +137,7 @@ class Bicycle(object):
     assert(len(self._colorset) > 1)
     self._stepcount = 0
     self._features = []
+    self._running = True
     source = self._sourcestrand.Raw()
 
     for w in Options.wheeldef:
@@ -208,22 +208,27 @@ class Bicycle(object):
       w.Animate(source, animate)
     
   def AnimateNextFrame(self):
+    if not self._running:
+      return
     self._animatedisplay.SendDmx()
     if self._sparkler is not None:
       self._sparkler.Sparkle()
 
     self.PedalTheBike()
 
+  def Blackout(self):
+    logging.debug("Blackout")
+    self._running = False
+    pixels = self._animatestrand.Raw()
+    for i in range(len(pixels)):
+      pixels[i] = 0
+    self._animatedisplay.SendDmx()
 
+      
+  # run loop for when used by itself without grinch show
   def _driver(self):
-    # run loop for when used by itself without grinch show
-    self.AnimateNextFrame()
     self._wrapper.AddEvent(50, lambda: self._driver())
-
-  def _internalFinish(self):
-    # used to shutdown when running by ourself
-    self._wrapper.AddEvent(2000, lambda: self.Blackout())
-    self._wrapper.AddEvent(2100, lambda: self._wrapper.Stop())
+    self.AnimateNextFrame()
 
 def main():
   Bicycle.SetArgs(Options.parser)
@@ -232,7 +237,7 @@ def main():
   wrapper = ClientWrapper()
   patterns = PixelPatterns()
   pattern = patterns.nextPattern()
-  bicycle = Bicycle(wrapper, pattern, lambda: bicycle._internalFinish())
+  bicycle = Bicycle(wrapper, pattern)
   wrapper.AddEvent(50, lambda: bicycle._driver())
   bicycle.Start()
   wrapper.Run()

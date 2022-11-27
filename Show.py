@@ -3,6 +3,7 @@ try:
 except ImportError:
   print("NO OLA INSTALLED!!!  USING STUB OLA!!!")
   from OLAStubClientWrapper import ClientWrapper
+from Bicycle import Bicycle
 from PixelDisplay import PixelDisplay
 from PixelPatterns import PixelPatterns
 from Relays import Relays
@@ -56,6 +57,7 @@ class Show(object):
     self._loop_count = 0
     self._relays = None
     self._display = None
+    self._bicycle = None
     self._target_time = time.time()
 
   @staticmethod
@@ -80,6 +82,9 @@ class Show(object):
     gc.collect()
     self._thispattern = self._patterns.nextPattern()
     self._sparkler = self._thispattern(self.display)
+    if Options.bicycleuniverse >= 0:
+      self._bicycle = Bicycle(self._wrapper, self._thispattern)
+      self._bicycle.Start()
 
   def LoadTiming(self, e):
     ms = int(e[0] * 1000)
@@ -131,7 +136,8 @@ class Show(object):
         self._target_time = time.time(
         )  # setting up new display takes time, so just reset expectations
     self._animateNextFrame()
-
+    if self._bicycle is not None:
+      self._bicycle.AnimateNextFrame()
     if self._sparkler is not None:
       self._sparkler.Sparkle()
 
