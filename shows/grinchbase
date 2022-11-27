@@ -1,5 +1,7 @@
 --patterns Rainbow,RedGreen,RandomStrands,AmericanFlag,RandomFlow,WhiteBlueFlow,RGFlow,HeatherStrand
---strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(ranges='54-108,141-184,200-349'), 26)
+#--patterns Rainbow,RandomStrands,AmericanFlag,RandomFlow,WhiteBlueFlow,HeatherStrand
+#--patterns WhiteBlueFlow
+--strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(ranges='47-99,130-173,188-349'), 26)
 --strand PixelDisplay.Strand(wrapper, 4, PixelDisplay.StrandMap(150, 50), 24)
 --strand PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='67-120,150-202'), 10)
 --strand PixelDisplay.Strand(wrapper, 17, PixelDisplay.StrandMap(478, 0), 0)
