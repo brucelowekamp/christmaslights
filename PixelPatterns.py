@@ -9,7 +9,10 @@ Orange = (255, 75, 0)
 Purple = (35, 0, 70)
 DarkPurple = (5, 0, 6)
 Black = (0, 0, 0)
-
+Red = (255, 0, 0)
+Green = (0, 255, 0)
+White = (175, 175, 100)
+Blue = (0, 0, 255)
 
 # decorator to build list of pattern functions to call by name or by list
 class pattern(object):
@@ -66,8 +69,10 @@ class PixelPatterns(object):
 
   @staticmethod
   @pattern
-  def RedGreen(display):
+  def RedGreen(display, colorset = []):
     print("RedGreen pattern")
+    colorset.append(Red)
+    colorset.append(Green)
     i = 0
     for p in display:
       red = (i // Options.rgsize) % 2 == 0
@@ -77,8 +82,10 @@ class PixelPatterns(object):
 
   @staticmethod
   # @pattern  # interesting idea, but not used at the moment
-  def RGFade(display):
+  def RGFade(display, colorset = []):
     print("RGFade pattern")
+    colorset.append(Red)
+    colorset.append(Green)
     minf = Options.fademin
     fadesets = Options.fadesets
 
@@ -103,8 +110,10 @@ class PixelPatterns(object):
 
   @staticmethod
   @pattern
-  def WhiteBlueFlow(display):
+  def WhiteBlueFlow(display, colorset = []):
     print("WhiteBlueFlow")
+    colorset.append(White)
+    colorset.append(Blue)
     for p in display:
       display.ColorSet(p, 175, 175, 100)
 
@@ -143,8 +152,14 @@ class PixelPatterns(object):
 
   @staticmethod
   @pattern
-  def Rainbow(display):
+  def Rainbow(display, colorset = []):
     print("Rainbow")
+    colorset.append(Red)
+    colorset.append(Green)
+    colorset.append(Blue)
+    colorset.append(Purple)
+    colorset.append(Orange)
+
     for s in display.strands():
       l = len(s)
       for p in s:
@@ -182,8 +197,9 @@ class PixelPatterns(object):
 
   @staticmethod
   @pattern
-  def HeatherStrand(display):
+  def HeatherStrand(display, colorset = []):
     print("RGBWP pattern")
+    colorset.extend(PixelPatterns.HeathersColors)
     for p in display:
       color = PixelPatterns.PickHeatherColor()
       display.ColorSet(p, color[0], color[1], color[2])
@@ -191,21 +207,25 @@ class PixelPatterns(object):
 
   @staticmethod
   @pattern
-  def RGFlow(display):
+  def RGFlow(display, colorset = []):
     print("RGFlow")
+    colorset.append(Red)
+    colorset.append(Green)
     for p in display:
       display.ColorSet(p, 255, 0, 0)
     return Sparkler.FlowPulse(display, lambda: (0, 255, 0))
 
   @staticmethod
   @pattern
-  def RandomFlow(display):
+  def RandomFlow(display, colorset = []):
     print("RandomFlow")
     a = PixelPatterns.PickHeatherColor()
     while True:
       b = PixelPatterns.PickHeatherColor()
       if (a != b):
         break
+    colorset.append(a)
+    colorset.append(b)
     for p in display:
       display.ColorSet(p, a[0], a[1], a[2])
 
@@ -213,9 +233,10 @@ class PixelPatterns(object):
 
   @staticmethod
   @pattern
-  def RandomStrands(display):
+  def RandomStrands(display, colorset = []):
     print("RandomStrands")
     colors = list(PixelPatterns.HeathersColors)
+    colorset.extend(PixelPatterns.HeathersColors)
     random.shuffle(colors)
     for s in display.strands():
       a = colors.pop()
@@ -235,8 +256,9 @@ class PixelPatterns(object):
   
   @staticmethod
   @pattern
-  def AmericanFlag(display):
+  def AmericanFlag(display, colorset = []):
     print("Stars and Stripe")
+    colorset.extend(PixelPatterns.RedWhiteAndBlue)
     i = iter(display.strands())
     first = next(i)
     second = next(i)
@@ -430,8 +452,9 @@ class PixelPatterns(object):
   
   @staticmethod
   @pattern
-  def RWBFlow(display):
+  def RWBFlow(display, colorset = []):
     print("RWBFlow")
+    colorset.extend(PixelPatterns.RedWhiteAndBlue)
     for p in display:
       color = PixelPatterns.PickRWB()
       display.ColorSet(p, color[0], color[1], color[2])
@@ -440,8 +463,10 @@ class PixelPatterns(object):
 
   @staticmethod
   @pattern
-  def BlueWall(display):
+  def BlueWall(display, colorset = []):
     print("Blue")
+    colorset.append(Blue)
+    colorset.append(White)
     for p in display:
       display.ColorSet(p, 0, 0, 255)
     return Sparkler.Twinkle(display)

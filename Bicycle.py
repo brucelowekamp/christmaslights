@@ -1,6 +1,7 @@
 import enum
 import gc
 import logging
+import math
 import random
 
 from PixelPatterns import PixelPatterns
@@ -23,12 +24,11 @@ from PixelPatterns import PixelPatterns
 import Ranges
 from Sparkler import Sparkler
 
-# to test: python3 Bicycle.py --pattern=Rainbow --wheel=80,51,2
-# --spinner=8,4,20,140,148,156,164
+# to test: python3 Bicycle.py --pattern=HeatherStrand --wheel=80,40,2 --spinner=140-144,146-150:10,140,155,170,185 --bicycleranges=0-70,250
 #
 # Bicycle has three features.  The frame bits are normal pattern.  The
 # wheels can be split into two bits: tires and spokes.  Tires (and
-# chains) are simply a sequence that rotates in a circle.  Spokes and
+# chains) are simply a sequence that rotates in a circle, called wheel.  Spokes and
 # crankset are referred to as spinners, where the line goes in a
 # sequence.
 #
@@ -36,13 +36,19 @@ from Sparkler import Sparkler
 # ordered clockwise from the right side.  Same ordering with spokes,
 # they move clockwise, going over one slot and back across the wheel
 # so each spoke reverses.
+#
+# The strand range includes only the non-wheel bits of the bike.  The
+# wheel and spinner generate their own colors from the colorset and
+# have their own syntax to determine where to map.
 class Bicycle(object):
   @staticmethod
   def SetArgs(parser):
     parser.add_argument('--bicycleuniverse', dest='bicycleuniverse', action='store', help="universe with bicycle on it", type=int, default=1)
-    parser.add_argument('--bicycleranges', dest='bicycleranges', action='store', help="strand ranges for bicycle.  should include only first of each wheel/crank spinner include extra pixel  ", default='0-70,80-130,140-147,200')
+    parser.add_argument('--bicycleranges', dest='bicycleranges', action='store', help="strand ranges for bicycle.  should include only first of each wheel/crank spinner include extra pixel  ", default='0-70,140-147,200')
     parser.add_argument('--wheel', dest='wheeldef', action='append', help="wheel start, length, pace", default=[]) # --wheel=80,51,1 --wheel=100,10,1
-    parser.add_argument('--spinner', dest='spindef', action='append', help="length, count, pace, start, start, start, ...", default=[]) # --spinner=8,4,4,140,148,156,164
+    parser.add_argument('--wheelfade', dest='wheelfade', type=float, default=3.5, help="exp scaling for wheel fade")
+
+    parser.add_argument('--spinner', dest='spindef', action='append', help="<first spoke range>:pace, start, start, start, ...", default=[]) # --spinner=140-144,146-150:4,140,155,170,185
 
   class Wheel(object):
     def __init__(self, start, length, pace):
@@ -127,22 +133,66 @@ class Bicycle(object):
     # animate is what source is copied to with wheel and spinners
     self._animatedisplay = PixelDisplay(wrapper, strandlist=[strandlist])
     self._animatestrand = next(self._animatedisplay.strands())
-    self._sparkler = pattern(self._sourcedisplay)
+    self._colorset = []
+    self._sparkler = pattern(self._sourcedisplay, self._colorset)
+    assert(len(self._colorset) > 1)
     self._stepcount = 0
     self._features = []
+    source = self._sourcestrand.Raw()
 
     for w in Options.wheeldef:
       params = w.split(',')
       # start, length, pace
-      self._features.append(Bicycle.Wheel(int(params[0]), int(params[1]),
-                                        int(params[2])))
+      start = int(params[0])
+      length = int(params[1])
+      pace = int(params[2])
+      self._features.append(Bicycle.Wheel(start, length, pace))
+      assert(length > 4)
+      wheelfade = Options.wheelfade
+      
+      a = random.choice(self._colorset)
+      b = a
+      while (a == b):
+        b = random.choice(self._colorset)
+      
+      for i in range(length):
+        frac = 0
+        if i < length / 2:
+          frac = (length/2-i)/(length/2)
+        else:
+          frac = (i-length/2)/(length/2)
+        scale = math.exp(frac * wheelfade - wheelfade)
+
+        source[(start+i)*3] = int(scale * a[0] + (1-scale) * b[0])
+        source[(start+i)*3+1] = int(scale * a[1] + (1-scale) * b[1])
+        source[(start+i)*3+2] = int(scale * a[2] + (1-scale) * b[2])
+        
+        
+      
     for s in Options.spindef:
-      params = s.split(',')
-      # "length, count, pace, start, start, start, ..."
-      starts = []
-      for i in range(3,3+int(params[1])):
-        starts.append(int(params[i]))
-      self._features.append(Bicycle.Spinner(int(params[0]), int(params[2]),
+      [rangestring,paramstring] = s.split(':')
+      pixels = Ranges.Parse(rangestring)
+      params = paramstring.split(',')
+      # "pace, start, start, start, ..."
+      length = pixels[-1]-pixels[0]+1
+      pace = int(params.pop(0))
+      starts = list(map(int, params))
+      assert(starts[0] == pixels[0])
+      a = random.choice(self._colorset)
+      b = a
+      while (length > 5 and a == b):
+        b = random.choice(self._colorset)
+      for i in range(length//2):
+        pixel = pixels.pop(0)
+        source[pixel*3] = a[0]
+        source[pixel*3+1] = a[1]
+        source[pixel*3+2] = a[2]
+      while len(pixels) > 0:
+        pixel = pixels.pop()
+        source[pixel*3] = b[0]
+        source[pixel*3+1] = b[1]
+        source[pixel*3+2] = b[2]
+      self._features.append(Bicycle.Spinner(length, pace,
                                             starts))
                                                                 
   def Start(self):
