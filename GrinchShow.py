@@ -152,7 +152,7 @@ class GrinchShow(Show):
         GrinchShow.FlashOff(off, Show.Relays.REINDEER),
         GrinchShow.FlashOff(off + 1, Show.Relays.OLAF),
         GrinchShow.FlashOff(off + 2, Show.Relays.SNOWMAN),
-        (off + 3, BIKE_OFF),
+        (off + 3, GrinchShow.GrinchCommands.BIKE_OFF),
         (off + 4, Show.Commands.OFF, Show.Relays.LASER_PROJ),
         GrinchShow.FlashOff(s, Show.Relays.GRINCH_SLEIGH),
         GrinchShow.FlashOn(t, Show.Relays.GRINCH), (t + 2, GrinchShow.GrinchCommands.START_SLIDE)

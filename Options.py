@@ -31,12 +31,14 @@ class _Options(object):
     import Relays
     import PixelPatterns
     import Sparkler
+    import Bicycle
 
     Show.Show.SetArgs(self._parser)
     PixelDisplay.PixelDisplay.SetArgs(self._parser)
     Relays.Relays.SetArgs(self._parser)
     PixelPatterns.PixelPatterns.SetArgs(self._parser)
     Sparkler.Sparkler.SetArgs(self._parser)
+    Bicycle.Bicycle.SetArgs(self._parser)
     if additional is not None:
       additional(self._parser)
     self._parser.add_argument('--loglevel', default="WARNING")

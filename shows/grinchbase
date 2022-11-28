@@ -1,9 +1,17 @@
---patterns Rainbow,RedGreen,RandomStrands,AmericanFlag,RandomFlow,WhiteBlueFlow,RGFlow,HeatherStrand
+--patterns Rainbow,RedGreen,RandomStrands,RandomFlow,WhiteBlueFlow,RGFlow,HeatherStrand
 #--patterns Rainbow,RandomStrands,AmericanFlag,RandomFlow,WhiteBlueFlow,HeatherStrand
 #--patterns WhiteBlueFlow
---strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(ranges='47-99,130-173,188-349'), 26)
+--strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(ranges='47-99,130-173,188-349'), 19)
 --strand PixelDisplay.Strand(wrapper, 4, PixelDisplay.StrandMap(150, 50), 24)
 --strand PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='67-120,150-202'), 10)
 --strand PixelDisplay.Strand(wrapper, 17, PixelDisplay.StrandMap(478, 0), 0)
 --heartranges 0-29,30-74,75-125,126-182
 --heartuniverse 15
+--bicycleuniverse 11
+--bicycleranges=24-29,31-36,85-97,99-107,111-118,213-233,257-283,300
+--wheel 0,24,1
+--wheel 122,24,1
+--wheel 257,27,2
+--spinner 24-29,31-36:3,24,39,54,69
+--spinner 147-152,154-159:3,147,162,177,192
+--spinner 237-239:2,237,240,244,247,250,253

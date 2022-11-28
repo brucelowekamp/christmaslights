@@ -81,7 +81,7 @@ class Show(object):
   def NewDisplay(self):
     gc.collect()
     self._thispattern = self._patterns.nextPattern()
-    self._sparkler = self._thispattern(self.display)
+    self._sparkler = self._thispattern(self._display)
     if Options.bicycleuniverse >= 0:
       self._bicycle = Bicycle(self._wrapper, self._thispattern)
       self._bicycle.Start()
