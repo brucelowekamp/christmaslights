@@ -1,3 +1,4 @@
+import colorsys
 import enum
 import gc
 import logging
@@ -154,6 +155,16 @@ class Bicycle(object):
       b = a
       while (a == b):
         b = random.choice(self._colorset)
+
+      (a_h, a_s, a_v) = colorsys.rgb_to_hsv(a[0]/255, a[1]/255, a[2]/255)
+      (b_h, b_s, b_v) = colorsys.rgb_to_hsv(b[0]/255, b[1]/255, b[2]/255)
+
+      d_h = (b_h - a_h)
+      d_s = (b_s - a_s)
+      d_v = (b_v - a_v)
+
+      print(f"{a[0]} {a[1]} {a[2]}   {b[0]} {b[1]} {b[2]}")
+      print(f"{a_h} {a_s} {a_v} {b_h} {b_s} {b_v}  {d_h} {d_s} {d_v}")
       
       for i in range(length):
         frac = 0
@@ -161,11 +172,16 @@ class Bicycle(object):
           frac = (length/2-i)/(length/2)
         else:
           frac = (i-length/2)/(length/2)
-        scale = math.exp(frac * wheelfade - wheelfade)
+        x_h = a_h + frac * d_h
+        x_s = a_s + frac * d_s
+        x_v = a_v + frac * d_v
 
-        source[(start+i)*3] = int(scale * a[0] + (1-scale) * b[0])
-        source[(start+i)*3+1] = int(scale * a[1] + (1-scale) * b[1])
-        source[(start+i)*3+2] = int(scale * a[2] + (1-scale) * b[2])
+        print(f"{frac} {x_h} {x_s} {x_v}")
+        (x_r, x_g, x_b) = colorsys.hsv_to_rgb(x_h, x_s, x_v)
+        
+        source[(start+i)*3] = int(x_r * 255)
+        source[(start+i)*3+1] = int(x_g * 255)
+        source[(start+i)*3+2] = int(x_b * 255)
         
         
       
@@ -231,7 +247,6 @@ class Bicycle(object):
     self.AnimateNextFrame()
 
 def main():
-  Bicycle.SetArgs(Options.parser)
   Options.ParseArgs()
   print ("starting")
   wrapper = ClientWrapper()
