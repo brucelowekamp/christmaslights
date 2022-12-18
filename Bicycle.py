@@ -163,9 +163,6 @@ class Bicycle(object):
       d_s = (b_s - a_s)
       d_v = (b_v - a_v)
 
-      print(f"{a[0]} {a[1]} {a[2]}   {b[0]} {b[1]} {b[2]}")
-      print(f"{a_h} {a_s} {a_v} {b_h} {b_s} {b_v}  {d_h} {d_s} {d_v}")
-      
       for i in range(length):
         frac = 0
         if i < length / 2:
@@ -176,7 +173,6 @@ class Bicycle(object):
         x_s = a_s + frac * d_s
         x_v = a_v + frac * d_v
 
-        print(f"{frac} {x_h} {x_s} {x_v}")
         (x_r, x_g, x_b) = colorsys.hsv_to_rgb(x_h, x_s, x_v)
         
         source[(start+i)*3] = int(x_r * 255)
