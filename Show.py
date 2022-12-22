@@ -82,9 +82,8 @@ class Show(object):
     gc.collect()
     self._thispattern = self._patterns.nextPattern()
     self._sparkler = self._thispattern(self._display)
-    if Options.bicycleuniverse >= 0:
-      self._bicycle = Bicycle(self._wrapper, self._thispattern)
-      self._bicycle.Start()
+    self._bicycle = Bicycle(self._wrapper, self._thispattern)
+    self._bicycle.Start()
 
   def LoadTiming(self, e):
     ms = int(e[0] * 1000)

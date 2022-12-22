@@ -113,7 +113,8 @@ class Heart(object):
     self._wrapper.AddEvent(0, lambda: self._onFinished())
   
   def AnimateNextFrame(self):
-    self._display.SendDmx()
+    if Options.heartuniverse >= 0:
+      self._display.SendDmx()
     if self._animate is not None and self._stepcount % Options.heartpace == 0:
       try:
         frame = next(self._animate)

@@ -220,7 +220,7 @@ class Bicycle(object):
       w.Animate(source, animate)
     
   def AnimateNextFrame(self):
-    if not self._running:
+    if Options.bicycleuniverse < 0 or not self._running:
       return
     self._animatedisplay.SendDmx()
     if self._sparkler is not None:
@@ -234,7 +234,8 @@ class Bicycle(object):
     pixels = self._animatestrand.Raw()
     for i in range(len(pixels)):
       pixels[i] = 0
-    self._animatedisplay.SendDmx()
+    if Options.bicycleuniverse >= 0:
+      self._animatedisplay.SendDmx()
 
       
   # run loop for when used by itself without grinch show
