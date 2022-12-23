@@ -4,7 +4,7 @@
 --strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(ranges='47-99,130-173,188-349'), 19)
 --strand PixelDisplay.Strand(wrapper, 4, PixelDisplay.StrandMap(150, 50), 24)
 --strand PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='67-120,150-202'), 10)
---strand PixelDisplay.Strand(wrapper, 17, PixelDisplay.StrandMap(478, 0), 0)
+--strand PixelDisplay.TreeStrand(wrapper, 17, PixelDisplay.StrandMap(478, 0), [126,190,322,413,478])
 --heartranges 0-29,30-74,75-125,126-182
 --heartuniverse 15
 --bicycleuniverse 11
