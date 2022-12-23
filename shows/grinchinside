@@ -1,0 +1,10 @@
+--patterns Rainbow
+#--patterns Rainbow,RedGreen,RandomStrands,RandomFlow,WhiteBlueFlow,RGFlow,HeatherStrand
+#--patterns Rainbow,RandomStrands,AmericanFlag,RandomFlow,WhiteBlueFlow,HeatherStrand
+#--patterns WhiteBlueFlow
+--strand PixelDisplay.TreeStrand(wrapper, 1, PixelDisplay.StrandMap(350, 0),[75,150,250,275,350])
+--grinchprob 1.0
+--holdtime 20
+--heartuniverse -1
+--bicycleuniverse -1
+--norelays

@@ -70,7 +70,7 @@ window not by moving bits
       self._universe = universe
       self._maxchannels = maxchannels
       self._channels = map.strand_len * 3
-      # note to self, why is this * 2 here?
+      # allocate buffer on the end for black to slide the window into
       self._pixels = array.array('B', [0] * self._channels * 2)
       self._map = map
       self._hold = hold
@@ -148,6 +148,68 @@ window not by moving bits
           u += 1
       self._draw = False
 
+  # subclass strand for spiral trees.  Difference is that the slide is per-tree,
+  # so each tree appears to get pulled down simultaneously.  Adds a list of tree
+  # lengths as a parameter:
+  # --strand PixelDisplay.TreeStrand(wrapper, 1, PixelDisplay.StrandMap(350, 0),[75,150,250,275,350])
+  class TreeStrand(Strand):
+    def __init__(self, wrapper, universe, map, treetops):
+      super(PixelDisplay.TreeStrand, self).__init__(wrapper, universe, map, 0)
+      if treetops[-1] != map.strand_len:
+        treetops.append(map.strand_len)
+        print ("WARNING: appending strand len to trees")
+      self._treetops = treetops
+      calclist = [0] + treetops
+      max = 0
+      for x in range(1,len(calclist)):
+        thislen = calclist[x] - calclist[x-1]
+        if thislen > max:
+          max = thislen
+      self._maxtree = max        
+
+    # returns a generator used to slide the pixels to the left.  Since spiral trees
+    # aren't held in the grinch's hand the second call is an immediate return.
+    # only real difference is max slide is maxtree
+    def SlideLeft(self):
+      if self._slid > 0:
+        # second slide is null
+        return
+      slide_to = 3 * self._maxtree
+      while (self._slid < slide_to):
+        if (self._maxtree <= 150):
+          self._slid += 6
+        else:
+          self._slid += 12  # double rate for longer strands
+        self._draw = True
+        yield True
+
+    # does the slide and wipes out bottom of next tree as the window slides along
+    def SendDmx(self):
+      if (self._draw):
+        # check that average brightness isn't greater than BrightSafety of full on
+        assert (sum(self._pixels[self._slid:self._slid + self._channels]) / self._channels <=
+                255 * PixelDisplay.BrightSafety)
+        # wipe out the bottom of each next tree
+        for tree in self._treetops[0:len(self._treetops)-1]:
+          stop = tree + self._slid//3
+          for pixel in range(tree, stop):
+            self._pixels[pixel * 3 + 0] = 0
+            self._pixels[pixel * 3 + 1] = 0
+            self._pixels[pixel * 3 + 2] = 0
+            
+        u = self._universe
+        # copies horribly to spread across universes
+        bases = range(0 + self._slid, self._channels + self._slid, self._maxchannels)
+        for b in bases:
+          data = self._pixels[b:min(b + self._maxchannels, self._channels + self._slid)]
+          # note: this is slow and non-pythonic, but would need to switch to numpy
+          # array for anything reasonable to not return a list instead of array
+          self._wrapper.Client().SendDmx(u, data, PixelDisplay.Strand.DmxSent)
+          u += 1
+      self._draw = False
+
+      
+      
   def __init__(self, wrapper, strandlist = None):
     self._draw = False
     self._wrapper = wrapper
