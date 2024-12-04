@@ -63,6 +63,7 @@ class Show(object):
   @staticmethod
   def SetArgs(parser):
     parser.add_argument('--nosleigh', action='store_true', help="no grinch sleigh for high winds")
+    parser.add_argument('--nobicycle', action='store_true', help="no bicycle")
     parser.add_argument('--inside',
                         action="store_true",
                         help="run inside show (family room, no relays)")
@@ -82,8 +83,9 @@ class Show(object):
     gc.collect()
     self._thispattern = self._patterns.nextPattern()
     self._sparkler = self._thispattern(self._display)
-    self._bicycle = Bicycle(self._wrapper, self._thispattern)
-    self._bicycle.Start()
+    if not Options.nobicycle:
+      self._bicycle = Bicycle(self._wrapper, self._thispattern)
+      self._bicycle.Start()
 
   def LoadTiming(self, e):
     ms = int(e[0] * 1000)

@@ -2,10 +2,11 @@
 #--patterns AmericanFlag,FrenchFlag,RWBFlow,EnglishFlag,BlueWall,SpanishFlag,AmericanFlag,ItalianFlag,BlueWall
 #--patterns PumpkinFlow,PumpkinFlow,AmericanFlag,PumpkinFlow,PumpkinFlow,Rainbow
 --patterns PumpkinFlow,PumpkinHorror
---holdtime 30
+--holdtime 240
 --sequence
 --norelays
+--nobicycle
 # inorder list of strands
---strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(ranges='55-110,141-184,200-349'), 26)
---strand PixelDisplay.Strand(wrapper, 4, PixelDisplay.StrandMap(100, 0), 0)
---strand PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-153,197-249'), 56)
+#--strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(ranges='55-110,141-184,200-349'), 26)
+--strand PixelDisplay.Strand(wrapper, 1, PixelDisplay.StrandMap(100, 0), 0)
+#--strand PixelDisplay.Strand(wrapper, 5, PixelDisplay.StrandMap(ranges='100-153,197-249'), 56)

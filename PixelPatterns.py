@@ -13,6 +13,7 @@ Red = (255, 0, 0)
 Green = (0, 255, 0)
 White = (175, 175, 100)
 Blue = (0, 0, 255)
+Yellow = (200, 200, 0)
 
 # decorator to build list of pattern functions to call by name or by list
 class pattern(object):
@@ -266,21 +267,21 @@ class PixelPatterns(object):
     trees = next(i)
     
     for p in first:
-      if p < 64:
+      if p < 62:
         first.ColorSet(p, 255, 0, 0)
       elif p < 81:
         first.ColorSet(p, 200, 200, 175)
       elif p < 93:
         first.ColorSet(p, 255, 0, 0)
-      elif p < 104:
+      elif p < 101:
         first.ColorSet(p, 200, 200, 175)
-      elif p < 116:
+      elif p < 113:
         first.ColorSet(p, 255, 0, 0)
       elif p < 133:
         first.ColorSet(p, 200, 200, 175)
-      elif p < 201:
+      elif p < 197:
         first.ColorSet(p, 255, 0, 0)
-      elif p < 241:
+      elif p < 238:
         first.ColorSet(p, 200, 200, 175)
       else:
         first.ColorSet(p, 255, 0, 0)
@@ -449,6 +450,24 @@ class PixelPatterns(object):
       third.ColorSet(p, 2, 2, 2)
     return None
 
+  @staticmethod
+  @pattern
+  def UkrainianFlag(display):
+    print("Ukraine")
+    i = iter(display.strands())
+    first = next(i)
+    second = next(i)
+    third = next(i)
+    for p in first:
+      first.ColorSet(p, 200, 200, 0)
+
+    for p in second:
+      second.ColorSet(p, 0, 0, 255)
+        
+    for p in third:
+      third.ColorSet(p, 0, 0, 255)
+    return None
+
   
   @staticmethod
   @pattern
@@ -480,7 +499,7 @@ class PixelPatterns(object):
   
   @staticmethod
   @pattern
-  def PumpkinFlow(display):
+  def PumpkinFlow(display, colorset = []):
     print("Pumpkin Flow")
     for p in display:
       color = Orange # PixelPatterns.PickPumpkin()
@@ -489,7 +508,7 @@ class PixelPatterns(object):
 
   @staticmethod
   @pattern
-  def PumpkinHorror(display):
+  def PumpkinHorror(display, colorset = []):
     print("Pumpkin Horror")
     for p in display:
       color = DarkPurple
