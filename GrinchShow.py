@@ -22,11 +22,11 @@ class GrinchShow(Show):
                         help="delay between grinch sleigh appear and lights on")
     parser.add_argument('--grinchoffdelay',
                         type=int,
-                        default=1,
+                        default=3,
                         help="delay between grinch sleigh appear and lights turning off")
     parser.add_argument('--darktime',
                         type=int,
-                        default=4,
+                        default=3,
                         help="time to remain dark after slide before reset")
     parser.add_argument('--grinchprob',
                         type=float,
@@ -145,17 +145,10 @@ class GrinchShow(Show):
   def StartGrinch(self):
     print("GRINCH")
     off = Options.grinchoffdelay
-    s = off + 6 
-    t = s + 1
     self.LoadTimings([
-        GrinchShow.FlashOn(0, Show.Relays.GRINCH_SLEIGH),
-        GrinchShow.FlashOff(off, Show.Relays.REINDEER),
-        GrinchShow.FlashOff(off + 1, Show.Relays.OLAF),
-        GrinchShow.FlashOff(off + 2, Show.Relays.SNOWMAN),
-        (off + 3, GrinchShow.GrinchCommands.BIKE_OFF),
-        (off + 4, Show.Commands.OFF, Show.Relays.LASER_PROJ),
-        GrinchShow.FlashOff(s, Show.Relays.GRINCH_SLEIGH),
-        GrinchShow.FlashOn(t, Show.Relays.GRINCH), (t + 2, GrinchShow.GrinchCommands.START_SLIDE)
+        GrinchShow.FlashOn(0, Show.Relays.GRINCH),
+        (off, GrinchShow.GrinchCommands.BIKE_OFF),
+        (off + 1.5, GrinchShow.GrinchCommands.START_SLIDE)
     ])
 
   def StartSlide(self):
@@ -172,14 +165,22 @@ class GrinchShow(Show):
 
   def EndGrinch(self):
     print("end GRINCH")
-    s = 0
-    self.LoadTimings([(s + 0, Show.Commands.OFF, Show.Relays.GRINCH),
-                      (s + 0.05, Show.Commands.ON, Show.Relays.GRINCH),
-                      (s + 0.15, Show.Commands.OFF, Show.Relays.GRINCH),
-                      (s + 0.25, Show.Commands.ON, Show.Relays.GRINCH),
-                      (s + 0.25, GrinchShow.GrinchCommands.FINISH_SLIDE),
-                      GrinchShow.FlashOff(s + 1.75, Show.Relays.GRINCH),
-                      (s + 4 + Options.darktime, Show.Commands.RESTART)])
+    off = 1.5
+    s = off + 5
+    self.LoadTimings([
+      GrinchShow.FlashOff(off, Show.Relays.REINDEER),
+      GrinchShow.FlashOff(off + 1.5, Show.Relays.OLAF),
+      GrinchShow.FlashOff(off + 3, Show.Relays.SNOWMAN),
+      (off + 4, Show.Commands.OFF, Show.Relays.LASER_PROJ),
+      # manual flash
+      (s + 0, Show.Commands.OFF, Show.Relays.GRINCH),
+      (s + 0.05, Show.Commands.ON, Show.Relays.GRINCH),
+      (s + 0.15, Show.Commands.OFF, Show.Relays.GRINCH),
+      (s + 0.25, Show.Commands.ON, Show.Relays.GRINCH),
+      (s + 0.25, GrinchShow.GrinchCommands.FINISH_SLIDE),
+      GrinchShow.FlashOff(s + 1.75, Show.Relays.GRINCH),
+      (s + 4 + Options.darktime, Show.Commands.RESTART)
+    ])
 
   def _animateNextFrame(self):
     self._heart.AnimateNextFrame()
